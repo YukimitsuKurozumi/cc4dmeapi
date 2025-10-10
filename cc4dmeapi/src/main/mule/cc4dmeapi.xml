@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<<<<<<< HEAD
 <mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core"
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
@@ -12,10 +11,11 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 	<flow name="cc4dmeapiFlow" doc:id="cebf8f3b-2c03-49a3-a3ea-49f9e9a41976" >
 		<file:listener doc:name="CSV File Listener" doc:id="2a276403-aef5-4f05-aaa0-1e0fc0402055" 
 			config-ref="File_Config" 
-			directory="/Users/ykurozumi/test_data/input" 
-			moveToDirectory="/Users/ykurozumi/test_data/success">
+			directory="${app.home}/src/test/resources/test_data" 
+			moveToDirectory="${app.home}/processed"
+			matcher="IFIDC0006_*.csv">
 			<scheduling-strategy >
-				<fixed-frequency frequency="5" timeUnit="SECONDS"/>
+				<fixed-frequency frequency="30" timeUnit="SECONDS"/>
 			</scheduling-strategy>
 		</file:listener>
 
@@ -54,19 +54,5 @@ output application/json
 		
 		<logger level="INFO" doc:name="Log Completion" doc:id="log-complete" 
 			message="File processing completed: #[attributes.fileName]"/>
-		<logger doc:name="Logger" doc:id="izclye" message="#[payload]"/>
-=======
-<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
-	<file:config name="File_Config" doc:name="File Config" doc:id="8ccaf83a-3211-4891-bd00-ccbe3935fb16" />
-	<flow name="cc4dmeapiFlow" doc:id="cebf8f3b-2c03-49a3-a3ea-49f9e9a41976" >
-		<file:listener doc:name="On New or Updated File" doc:id="2a276403-aef5-4f05-aaa0-1e0fc0402055" config-ref="File_Config" directory="/Users/ykurozumi/test_data/input" moveToDirectory="/Users/ykurozumi/test_data/success">
-			<scheduling-strategy >
-				<fixed-frequency frequency="10" timeUnit="SECONDS"/>
-			</scheduling-strategy>
-		</file:listener>
->>>>>>> ab578de44b034a58e7ecf7843d7dc5292a7bd3d8
 	</flow>
 </mule>
