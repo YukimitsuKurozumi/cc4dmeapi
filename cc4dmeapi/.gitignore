@@ -46,3 +46,6 @@ target/
 .DS_Store
 velocity.log
 .tooling-project
+
+# DataWeave Playground temporary files
+src/test/resources/embedded-dw_*/
