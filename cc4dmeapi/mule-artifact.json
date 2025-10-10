@@ -1,4 +1,5 @@
 {
+  "name": "cc4dmeapi",
   "minMuleVersion": "4.9.10",
   "javaSpecificationVersions": [
     "17"
