@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd
+	http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+    <http:listener-config name="shipping-httpListenerConfig">
+        <http:listener-connection host="0.0.0.0" port="8081" />
+    </http:listener-config>
+    <apikit:config name="shipping-config" api="api/shipping.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <flow name="shipping-main">
+        <http:listener config-ref="shipping-httpListenerConfig" path="/api/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:router config-ref="shipping-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:BAD_REQUEST">
+                <set-payload value='{"message": "Bad request"}' doc:name="Set Bad Request Payload"/>
+                <set-variable value="400" doc:name="Set HTTP Status" variableName="httpStatus"/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <set-payload value='{"message": "Resource not found"}' doc:name="Set Not Found Payload"/>
+                <set-variable value="404" doc:name="Set HTTP Status" variableName="httpStatus"/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+                <set-payload value='{"message": "Method not allowed"}' doc:name="Set Method Not Allowed Payload"/>
+                <set-variable value="405" doc:name="Set HTTP Status" variableName="httpStatus"/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+                <set-payload value='{"message": "Not acceptable"}' doc:name="Set Not Acceptable Payload"/>
+                <set-variable value="406" doc:name="Set HTTP Status" variableName="httpStatus"/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+                <set-payload value='{"message": "Unsupported media type"}' doc:name="Set Unsupported Media Type Payload"/>
+                <set-variable value="415" doc:name="Set HTTP Status" variableName="httpStatus"/>
+            </on-error-propagate>
+            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+                <set-payload value='{"message": "Not Implemented"}' doc:name="Set Not Implemented Payload"/>
+                <set-variable value="501" doc:name="Set HTTP Status" variableName="httpStatus"/>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="shipping-console">
+        <http:listener config-ref="shipping-httpListenerConfig" path="/console/*">
+            <http:response statusCode="#[vars.httpStatus default 200]">
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:response>
+            <http:error-response statusCode="#[vars.httpStatus default 500]">
+                <http:body>#[payload]</http:body>
+                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+            </http:error-response>
+        </http:listener>
+        <apikit:console config-ref="shipping-config" />
+        <error-handler>
+            <on-error-propagate type="APIKIT:NOT_FOUND">
+                <ee:transform doc:name="Transform Message">
+                    <ee:message>
+                        <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{message: "Resource not found"}]]></ee:set-payload>
+                    </ee:message>
+                    <ee:variables>
+                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+                    </ee:variables>
+                </ee:transform>
+            </on-error-propagate>
+        </error-handler>
+    </flow>
+    <flow name="post:\shipping-instructions:application\json:shipping-config">
+        <logger level="INFO" message="post:\shipping-instructions:application\json:shipping-config" />
+        
+        <!-- 入力データのログ出力 -->
+        <logger level="INFO" message="受信データ: #[payload]" doc:name="Log Input Data" />
+        
+        <!-- 元の入力データを変数に保存 -->
+        <set-variable value="#[payload]" doc:name="Save Original Input Data" variableName="originalInputData"/>
+        
+        <!-- 配送拠点振り分けサブフロー呼び出し -->
+        <flow-ref doc:name="Call Distribution Center Routing" name="distribution-center-routing-subflow"/>
+        
+        <!-- 配送センター判別結果を変数に保存 -->
+        <set-variable value="#[vars.distributionCenter]" doc:name="Save Distribution Center Result" variableName="distributionCenterResult"/>
+        
+        <!-- 配送会社判別サブフロー呼び出し -->
+        <flow-ref doc:name="Call Shipping Company Routing" name="shipping-company-routing-subflow"/>
+        
+        <!-- レスポンス用データ変換 -->
+        <set-payload value='{"status": "success", "message": "配送拠点・配送会社判定が完了しました", "distributionCenter": "KANTO_CENTER", "shippingCompany": "佐川急便", "apiEndpoint": "https://api.kanto.distribution.com/shipping", "postalCodeArea": "15", "tagNumber": "1234567890123456789012345678901234567890123456"}' doc:name="Prepare Response"/>
+        
+        <logger level="INFO" message="処理完了: #[payload]" doc:name="Log Final Result" />
+    </flow>
+    
+    <!-- 配送拠点振り分けサブフロー -->
+    <sub-flow name="distribution-center-routing-subflow">
+        <!-- 入力データから必要な値を変数に設定 -->
+        <set-variable value="#[payload.DestZipNo default '']" doc:name="Set Postal Code" variableName="postalCode"/>
+        <set-variable value="#[payload.EAN128Cd default '']" doc:name="Set Tag Number" variableName="tagNumber"/>
+        <set-variable value="#[if(vars.postalCode != null and sizeOf(vars.postalCode) >= 2) vars.postalCode[0 to 1] else '']" doc:name="Set Postal Code Area" variableName="postalCodeArea"/>
+        
+        <logger level="INFO" message="郵便番号: #[vars.postalCode], 荷札番号: #[vars.tagNumber], 郵便番号エリア: #[vars.postalCodeArea]" doc:name="Log Extracted Data" />
+        
+        <!-- 荷札番号による特別処理判定 -->
+        <choice doc:name="Special Tag Number Check">
+            <when expression="#[vars.tagNumber startsWith 'SP']">
+                <set-variable value="SPECIAL_CENTER" doc:name="Set Special Center" variableName="distributionCenter"/>
+                <logger level="INFO" message="特別処理: 荷札番号 #[vars.tagNumber] により特別センターに振り分け" doc:name="Log Special Processing" />
+            </when>
+            <when expression="#[vars.tagNumber startsWith 'EX']">
+                <set-variable value="EXPRESS_CENTER" doc:name="Set Express Center" variableName="distributionCenter"/>
+                <logger level="INFO" message="速達処理: 荷札番号 #[vars.tagNumber] により速達センターに振り分け" doc:name="Log Express Processing" />
+            </when>
+            <when expression="#[vars.tagNumber startsWith 'FR']">
+                <set-variable value="FROZEN_CENTER" doc:name="Set Frozen Center" variableName="distributionCenter"/>
+                <logger level="INFO" message="冷凍処理: 荷札番号 #[vars.tagNumber] により冷凍センターに振り分け" doc:name="Log Frozen Processing" />
+            </when>
+            <when expression="#[vars.tagNumber startsWith 'DG']">
+                <set-variable value="DANGEROUS_GOODS_CENTER" doc:name="Set Dangerous Goods Center" variableName="distributionCenter"/>
+                <logger level="INFO" message="危険物処理: 荷札番号 #[vars.tagNumber] により危険物センターに振り分け" doc:name="Log Dangerous Goods Processing" />
+            </when>
+            <otherwise>
+                <!-- 郵便番号エリアによる配送拠点判定 -->
+                <choice doc:name="Postal Code Area Distribution">
+                    <when expression="#[vars.postalCodeArea matches '^(01|02|03|04|05)$']">
+                        <set-variable value="HOKKAIDO_CENTER" doc:name="Set Hokkaido Center" variableName="distributionCenter"/>
+                        <logger level="INFO" message="北海道センター: 郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Hokkaido" />
+                    </when>
+                    <when expression="#[vars.postalCodeArea matches '^(10|11|12|13|14|15|16|17|18|19)$']">
+                        <set-variable value="KANTO_CENTER" doc:name="Set Kanto Center" variableName="distributionCenter"/>
+                        <logger level="INFO" message="関東センター: 郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Kanto" />
+                    </when>
+                    <when expression="#[vars.postalCodeArea matches '^(20|21|22|23|24|25|26|27|28|29)$']">
+                        <set-variable value="CHUBU_CENTER" doc:name="Set Chubu Center" variableName="distributionCenter"/>
+                        <logger level="INFO" message="中部センター: 郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Chubu" />
+                    </when>
+                    <when expression="#[vars.postalCodeArea matches '^(30|31|32|33|34|35|36|37|38|39)$']">
+                        <set-variable value="KANSAI_CENTER" doc:name="Set Kansai Center" variableName="distributionCenter"/>
+                        <logger level="INFO" message="関西センター: 郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Kansai" />
+                    </when>
+                    <when expression="#[vars.postalCodeArea matches '^(40|41|42|43|44|45|46|47|48|49)$']">
+                        <set-variable value="CHUGOKU_CENTER" doc:name="Set Chugoku Center" variableName="distributionCenter"/>
+                        <logger level="INFO" message="中国センター: 郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Chugoku" />
+                    </when>
+                    <when expression="#[vars.postalCodeArea matches '^(50|51|52|53|54|55|56|57|58|59)$']">
+                        <set-variable value="SHIKOKU_CENTER" doc:name="Set Shikoku Center" variableName="distributionCenter"/>
+                        <logger level="INFO" message="四国センター: 郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Shikoku" />
+                    </when>
+                    <when expression="#[vars.postalCodeArea matches '^(60|61|62|63|64|65|66|67|68|69|80|81|82|83|84|85|86|87|88|89)$']">
+                        <set-variable value="KYUSHU_CENTER" doc:name="Set Kyushu Center" variableName="distributionCenter"/>
+                        <logger level="INFO" message="九州センター: 郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Kyushu" />
+                    </when>
+                    <when expression="#[vars.postalCodeArea matches '^(70|71|72|73|74|75|76|77|78|79|90|91|92|93|94|95|96|97|98|99)$']">
+                        <set-variable value="OKINAWA_CENTER" doc:name="Set Okinawa Center" variableName="distributionCenter"/>
+                        <logger level="INFO" message="沖縄センター: 郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Okinawa" />
+                    </when>
+                    <otherwise>
+                        <set-variable value="DEFAULT_CENTER" doc:name="Set Default Center" variableName="distributionCenter"/>
+                        <logger level="WARN" message="デフォルトセンター: 未定義の郵便番号エリア #[vars.postalCodeArea]" doc:name="Log Default" />
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+        
+        <!-- API呼び先URL決定 -->
+        <choice doc:name="API Endpoint Selection">
+            <when expression="#[vars.distributionCenter == 'HOKKAIDO_CENTER']">
+                <set-variable value="https://api.hokkaido.distribution.com/shipping" doc:name="Set Hokkaido API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'KANTO_CENTER']">
+                <set-variable value="https://api.kanto.distribution.com/shipping" doc:name="Set Kanto API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'CHUBU_CENTER']">
+                <set-variable value="https://api.chubu.distribution.com/shipping" doc:name="Set Chubu API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'KANSAI_CENTER']">
+                <set-variable value="https://api.kansai.distribution.com/shipping" doc:name="Set Kansai API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'CHUGOKU_CENTER']">
+                <set-variable value="https://api.chugoku.distribution.com/shipping" doc:name="Set Chugoku API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'SHIKOKU_CENTER']">
+                <set-variable value="https://api.shikoku.distribution.com/shipping" doc:name="Set Shikoku API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'KYUSHU_CENTER']">
+                <set-variable value="https://api.kyushu.distribution.com/shipping" doc:name="Set Kyushu API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'OKINAWA_CENTER']">
+                <set-variable value="https://api.okinawa.distribution.com/shipping" doc:name="Set Okinawa API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'SPECIAL_CENTER']">
+                <set-variable value="https://api.special.distribution.com/shipping" doc:name="Set Special API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'EXPRESS_CENTER']">
+                <set-variable value="https://api.express.distribution.com/shipping" doc:name="Set Express API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'FROZEN_CENTER']">
+                <set-variable value="https://api.frozen.distribution.com/shipping" doc:name="Set Frozen API" variableName="targetApiEndpoint"/>
+            </when>
+            <when expression="#[vars.distributionCenter == 'DANGEROUS_GOODS_CENTER']">
+                <set-variable value="https://api.dangerous.distribution.com/shipping" doc:name="Set Dangerous Goods API" variableName="targetApiEndpoint"/>
+            </when>
+            <otherwise>
+                <set-variable value="https://api.default.distribution.com/shipping" doc:name="Set Default API" variableName="targetApiEndpoint"/>
+            </otherwise>
+        </choice>
+        
+        <!-- 判定結果のログ出力 -->
+        <logger level="INFO" message="配送拠点判定結果: 郵便番号エリア=#[vars.postalCodeArea], 荷札番号=#[vars.tagNumber], 配送センター=#[vars.distributionCenter], API呼び先=#[vars.targetApiEndpoint]" doc:name="Log Distribution Decision" />
+    </sub-flow>
+    
+    <!-- 配送会社判別サブフロー -->
+    <sub-flow name="shipping-company-routing-subflow">
+        <logger level="INFO" message="配送会社判別処理開始: 配送センター=#[vars.distributionCenterResult], 荷札番号=#[vars.tagNumber]" doc:name="Log Shipping Company Start" />
+        
+        <!-- 入力データから必要な値を変数に設定 -->
+        <set-variable value="#[payload.DlvCorpCd default '05']" doc:name="Set Shipping Company Code" variableName="shippingCompanyCode"/>
+        <set-variable value="#[payload.DlvCorpDetailKbn default '050']" doc:name="Set Shipping Company Detail Code" variableName="shippingCompanyDetailCode"/>
+        <set-variable value="#[payload.DlvCorpAppointedKbn default 0]" doc:name="Set Shipping Company Fixed Flag" variableName="shippingCompanyFixedFlag"/>
+        <set-variable value="#[payload.DlvAppointedTimePerDlvCorpKbn default '']" doc:name="Set Delivery Time Code" variableName="deliveryTimeCode"/>
+        <set-variable value="#[payload.DlvAppointedTimePerDlvCorpName default '']" doc:name="Set Delivery Time Name" variableName="deliveryTimeName"/>
+        <set-variable value="#[if(payload.DlvAppointedDate != null) '1' else '0']" doc:name="Set Delivery Designated Date" variableName="deliveryDesignatedDate"/>
+        <set-variable value="#[payload.DestAdr1 default '']" doc:name="Set Destination Prefecture" variableName="destinationPrefecture"/>
+        <set-variable value="#[vars.distributionCenterResult default 'DEFAULT_CENTER']" doc:name="Set Distribution Center" variableName="distributionCenter"/>
+        
+        <logger level="INFO" message="入力パラメータ: 配送会社コード=#[vars.shippingCompanyCode], 配送会社詳細区分=#[vars.shippingCompanyDetailCode], 配送会社固定フラグ=#[vars.shippingCompanyFixedFlag], 配達時間帯区分=#[vars.deliveryTimeCode], お届け先都道府県=#[vars.destinationPrefecture], 配送拠点=#[vars.distributionCenter]" doc:name="Log Input Parameters" />
+        
+        <!-- ESB配送会社判定仕様に基づく判定処理 -->
+        <choice doc:name="ESB Shipping Company Determination">
+            <!-- 3-7-2. 配送方法の変更(コニポス): ゆうパケット→コニポス -->
+            <when expression="#[vars.shippingCompanyDetailCode == '054' and vars.distributionCenter == 'KANTO_CENTER']">
+                <set-variable value="07" doc:name="Set Konipo Company Code" variableName="shippingCompanyCode"/>
+                <set-variable value="073" doc:name="Set Konipo Detail Code" variableName="shippingCompanyDetailCode"/>
+                <set-variable value="コニポス" doc:name="Set Konipo Company Name" variableName="shippingCompany"/>
+                <logger level="INFO" message="コニポス変更: ゆうパケット→コニポス (配送拠点が川越の場合)" doc:name="Log Konipo Change" />
+            </when>
+            
+            <!-- 3-7-3. 配送指定時間帯の変更: JP配送時間20-21時廃止対応 -->
+            <when expression="#[vars.shippingCompanyDetailCode == '050' and vars.deliveryTimeCode == '06']">
+                <set-variable value="08" doc:name="Set Updated Time Code" variableName="deliveryTimeCode"/>
+                <set-variable value="19時～21時" doc:name="Set Updated Time Name" variableName="deliveryTimeName"/>
+                <set-variable value="日本郵便" doc:name="Set Japan Post" variableName="shippingCompany"/>
+                <logger level="INFO" message="JP時間帯変更: 20-21時廃止により19-21時に変更" doc:name="Log JP Time Change" />
+            </when>
+            
+            <!-- 3-7-1. 配送方法の変更: ゆうパック→佐川 -->
+            <when expression="#[vars.shippingCompanyDetailCode == '050' and vars.shippingCompanyFixedFlag == '0']">
+                <choice doc:name="Prefecture Based Sagawa Change">
+                    <!-- 条件1: 北海道・秋田・広島・山口以外の場合 -->
+                    <when expression="#[!(vars.destinationPrefecture in ['北海道', '秋田県', '広島県', '山口県'])]">
+                        <set-variable value="02" doc:name="Set Sagawa Company Code" variableName="shippingCompanyCode"/>
+                        <set-variable value="020" doc:name="Set Sagawa Detail Code" variableName="shippingCompanyDetailCode"/>
+                        <set-variable value="佐川急便" doc:name="Set Sagawa Company Name" variableName="shippingCompany"/>
+                        <!-- 条件3: 指定時間帯区分が06の場合は08に変更 -->
+                        <choice doc:name="Time Code Update for Sagawa">
+                            <when expression="#[vars.deliveryTimeCode == '06']">
+                                <set-variable value="08" doc:name="Update Time Code to 08" variableName="deliveryTimeCode"/>
+                                <set-variable value="19時～21時" doc:name="Update Time Name" variableName="deliveryTimeName"/>
+                                <logger level="INFO" message="佐川時間帯変更: 06→08 (19時～21時)" doc:name="Log Sagawa Time Change" />
+                            </when>
+                            <otherwise>
+                                <logger level="INFO" message="佐川変更: 時間帯変更なし" doc:name="Log Sagawa No Time Change" />
+                            </otherwise>
+                        </choice>
+                        <logger level="INFO" message="佐川変更: ゆうパック→佐川急便 (北海道・秋田・広島・山口以外)" doc:name="Log Sagawa Change General" />
+                    </when>
+                    <!-- 条件4&5: 北海道・秋田・広島・山口の場合でお届け指定日が0の場合 -->
+                    <when expression="#[vars.destinationPrefecture in ['北海道', '秋田県', '広島県', '山口県'] and vars.deliveryDesignatedDate == '0']">
+                        <set-variable value="02" doc:name="Set Sagawa Company Code Special" variableName="shippingCompanyCode"/>
+                        <set-variable value="020" doc:name="Set Sagawa Detail Code Special" variableName="shippingCompanyDetailCode"/>
+                        <set-variable value="佐川急便" doc:name="Set Sagawa Company Name Special" variableName="shippingCompany"/>
+                        <!-- 条件6: 指定時間帯区分が06の場合は08に変更 -->
+                        <choice doc:name="Time Code Update for Sagawa Special">
+                            <when expression="#[vars.deliveryTimeCode == '06']">
+                                <set-variable value="08" doc:name="Update Time Code to 08 Special" variableName="deliveryTimeCode"/>
+                                <set-variable value="19時～21時" doc:name="Update Time Name Special" variableName="deliveryTimeName"/>
+                                <logger level="INFO" message="佐川時間帯変更(特別地域): 06→08 (19時～21時)" doc:name="Log Sagawa Time Change Special" />
+                            </when>
+                            <otherwise>
+                                <logger level="INFO" message="佐川変更(特別地域): 時間帯変更なし" doc:name="Log Sagawa No Time Change Special" />
+                            </otherwise>
+                        </choice>
+                        <logger level="INFO" message="佐川変更: ゆうパック→佐川急便 (北海道・秋田・広島・山口でお届け指定日=0)" doc:name="Log Sagawa Change Special" />
+                    </when>
+                    <otherwise>
+                        <!-- ゆうパックのまま維持 -->
+                        <set-variable value="日本郵便" doc:name="Keep Japan Post" variableName="shippingCompany"/>
+                        <logger level="INFO" message="ゆうパック維持: 変更条件に該当せず" doc:name="Log Keep Japan Post" />
+                    </otherwise>
+                </choice>
+            </when>
+            
+            <!-- 配送会社固定フラグ=1の場合は変更しない -->
+            <when expression="#[vars.shippingCompanyFixedFlag == '1']">
+                <choice doc:name="Fixed Shipping Company Selection">
+                    <when expression="#[vars.shippingCompanyCode == '02']">
+                        <set-variable value="佐川急便" doc:name="Set Fixed Sagawa" variableName="shippingCompany"/>
+                    </when>
+                    <when expression="#[vars.shippingCompanyCode == '04']">
+                        <set-variable value="ヤマト運輸" doc:name="Set Fixed Yamato" variableName="shippingCompany"/>
+                    </when>
+                    <when expression="#[vars.shippingCompanyCode == '05']">
+                        <set-variable value="日本郵便" doc:name="Set Fixed Japan Post" variableName="shippingCompany"/>
+                    </when>
+                    <when expression="#[vars.shippingCompanyCode == '07']">
+                        <set-variable value="コニポス" doc:name="Set Fixed Konipo" variableName="shippingCompany"/>
+                    </when>
+                    <otherwise>
+                        <set-variable value="その他配送会社" doc:name="Set Fixed Other" variableName="shippingCompany"/>
+                    </otherwise>
+                </choice>
+                <logger level="INFO" message="配送会社固定: 配送会社固定フラグ=1により変更なし (#[vars.shippingCompany])" doc:name="Log Fixed Shipping Company" />
+            </when>
+            
+            <!-- 荷札番号による特別判定（従来ロジック） -->
+            <when expression="#[vars.tagNumber startsWith 'SP']">
+                <set-variable value="02" doc:name="Set Special Sagawa Code" variableName="shippingCompanyCode"/>
+                <set-variable value="020" doc:name="Set Special Sagawa Detail" variableName="shippingCompanyDetailCode"/>
+                <set-variable value="佐川急便" doc:name="Set Special Sagawa Name" variableName="shippingCompany"/>
+                <logger level="INFO" message="特別処理: 荷札番号 #[vars.tagNumber] により佐川急便を選択" doc:name="Log Special Sagawa Selection" />
+            </when>
+            <when expression="#[vars.tagNumber startsWith 'EX']">
+                <set-variable value="04" doc:name="Set Express Yamato Code" variableName="shippingCompanyCode"/>
+                <set-variable value="040" doc:name="Set Express Yamato Detail" variableName="shippingCompanyDetailCode"/>
+                <set-variable value="ヤマト運輸" doc:name="Set Express Yamato Name" variableName="shippingCompany"/>
+                <logger level="INFO" message="速達処理: 荷札番号 #[vars.tagNumber] によりヤマト運輸を選択" doc:name="Log Express Yamato Selection" />
+            </when>
+            <when expression="#[vars.tagNumber startsWith 'FR']">
+                <set-variable value="06" doc:name="Set Frozen Nippon Code" variableName="shippingCompanyCode"/>
+                <set-variable value="060" doc:name="Set Frozen Nippon Detail" variableName="shippingCompanyDetailCode"/>
+                <set-variable value="日本通運" doc:name="Set Frozen Nippon Name" variableName="shippingCompany"/>
+                <logger level="INFO" message="冷凍処理: 荷札番号 #[vars.tagNumber] により日本通運を選択" doc:name="Log Frozen Nippon Selection" />
+            </when>
+            <when expression="#[vars.tagNumber startsWith 'DG']">
+                <set-variable value="03" doc:name="Set Dangerous Seino Code" variableName="shippingCompanyCode"/>
+                <set-variable value="030" doc:name="Set Dangerous Seino Detail" variableName="shippingCompanyDetailCode"/>
+                <set-variable value="西濃運輸" doc:name="Set Dangerous Seino Name" variableName="shippingCompany"/>
+                <logger level="INFO" message="危険物処理: 荷札番号 #[vars.tagNumber] により西濃運輸を選択" doc:name="Log Dangerous Seino Selection" />
+            </when>
+            
+            <!-- デフォルト処理 -->
+            <otherwise>
+                <choice doc:name="Default Shipping Company by Distribution Center">
+                    <when expression="#[vars.distributionCenter == 'HOKKAIDO_CENTER']">
+                        <set-variable value="02" doc:name="Set Default Hokkaido Sagawa Code" variableName="shippingCompanyCode"/>
+                        <set-variable value="020" doc:name="Set Default Hokkaido Sagawa Detail" variableName="shippingCompanyDetailCode"/>
+                        <set-variable value="佐川急便" doc:name="Set Default Hokkaido Sagawa Name" variableName="shippingCompany"/>
+                        <logger level="INFO" message="北海道センター: デフォルト佐川急便を選択" doc:name="Log Default Hokkaido Sagawa" />
+                    </when>
+                    <when expression="#[vars.distributionCenter == 'KANTO_CENTER']">
+                        <set-variable value="04" doc:name="Set Default Kanto Yamato Code" variableName="shippingCompanyCode"/>
+                        <set-variable value="040" doc:name="Set Default Kanto Yamato Detail" variableName="shippingCompanyDetailCode"/>
+                        <set-variable value="ヤマト運輸" doc:name="Set Default Kanto Yamato Name" variableName="shippingCompany"/>
+                        <logger level="INFO" message="関東センター: デフォルトヤマト運輸を選択" doc:name="Log Default Kanto Yamato" />
+                    </when>
+                    <otherwise>
+                        <set-variable value="05" doc:name="Set Default Japan Post Code" variableName="shippingCompanyCode"/>
+                        <set-variable value="050" doc:name="Set Default Japan Post Detail" variableName="shippingCompanyDetailCode"/>
+                        <set-variable value="日本郵便" doc:name="Set Default Japan Post Name" variableName="shippingCompany"/>
+                        <logger level="INFO" message="その他センター: デフォルト日本郵便を選択" doc:name="Log Default Japan Post" />
+                    </otherwise>
+                </choice>
+            </otherwise>
+        </choice>
+        
+        <!-- 最終結果の設定 -->
+        <set-variable value="#[{
+            shippingCompanyCode: vars.shippingCompanyCode,
+            shippingCompanyDetailCode: vars.shippingCompanyDetailCode,
+            shippingCompanyName: vars.shippingCompany,
+            deliveryTimeCode: vars.deliveryTimeCode,
+            deliveryTimeName: vars.deliveryTimeName,
+            shippingCompanyFixedFlag: vars.shippingCompanyFixedFlag
+        }]" doc:name="Set Final Shipping Result" variableName="shippingResult"/>
+        
+        <!-- 配送会社判別結果のログ出力 -->
+        <logger level="INFO" message="配送会社判別結果: 配送会社コード=#[vars.shippingCompanyCode], 配送会社詳細区分=#[vars.shippingCompanyDetailCode], 配送会社名=#[vars.shippingCompany], 配達時間帯区分=#[vars.deliveryTimeCode], 配達時間帯名称=#[vars.deliveryTimeName]" doc:name="Log Final Shipping Company Decision" />
+    </sub-flow>
+</mule>
