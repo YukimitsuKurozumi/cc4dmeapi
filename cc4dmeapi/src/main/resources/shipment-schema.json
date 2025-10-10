@@ -1,1690 +1,206 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "title": "出荷指示情報スキーマ",
-  "description": "IFIDC0006 出荷指示情報のJSONスキーマ",
-  "properties": {
-    "DataKbn": {
-      "type": "string",
-      "description": "データ区分",
-      "pattern": "^[0-9]+$"
-    },
-    "UpdateKbn": {
-      "type": "string",
-      "description": "更新区分",
-      "pattern": "^[0-9]+$"
-    },
-    "ShipmentKbn": {
-      "type": "string",
-      "description": "出荷区分",
-      "pattern": "^[0-9]+$"
-    },
-    "ShopOrderDate": {
-      "type": "string",
-      "description": "店舗注文日"
-    },
-    "DeliveryScheDate": {
-      "type": "string",
-      "description": "配送予定日"
-    },
-    "DlvCorpCd": {
-      "type": "string",
-      "description": "配送会社コード",
-      "pattern": "^[0-9]{2}$"
-    },
-    "DlvBaseKbn": {
-      "type": "string",
-      "description": "配送拠点区分",
-      "pattern": "^[0-9]+$"
-    },
-    "ShopCd": {
-      "type": "string",
-      "description": "店舗コード"
-    },
-    "ShipmentNo": {
-      "type": "string",
-      "description": "出荷番号",
-      "pattern": "^[0-9]{13}$"
-    },
-    "ShipmentLineSeq": {
-      "type": "string",
-      "description": "出荷明細連番",
-      "pattern": "^[0-9]+$"
-    },
-    "ShipmentLineNo": {
-      "type": "string",
-      "description": "出荷明細番号",
-      "pattern": "^[0-9]+$"
-    },
-    "SetCommodityKbn": {
-      "type": "string",
-      "description": "セット商品区分",
-      "pattern": "^[0-1]$"
-    },
-    "ItemCd": {
-      "type": "string",
-      "description": "商品コード"
-    },
-    "SalesCommodityName": {
-      "type": "string",
-      "description": "販売商品名"
-    },
-    "ShipmentQty": {
-      "type": "string",
-      "description": "出荷数量",
-      "pattern": "^[0-9]+$"
-    },
-    "SalesPrice": {
-      "type": "string",
-      "description": "販売価格",
-      "pattern": "^[0-9]+$"
-    },
-    "OrderCommodityYen": {
-      "type": "string",
-      "description": "注文商品金額",
-      "pattern": "^[0-9]+$"
-    },
-    "DiscountYen": {
-      "type": "string",
-      "description": "割引金額",
-      "pattern": "^[0-9]+$"
-    },
-    "OrderCommodityTax": {
-      "type": "string",
-      "description": "注文商品税額",
-      "pattern": "^[0-9]+$"
-    },
-    "WrappingServiceName": {
-      "type": "string",
-      "description": "包装サービス名"
-    },
-    "WrappingFee": {
-      "type": "string",
-      "description": "包装料金",
-      "pattern": "^[0-9]*$"
-    },
-    "WrappingFeeTax": {
-      "type": "string",
-      "description": "包装料金税額",
-      "pattern": "^[0-9]*$"
-    },
-    "SetItemCd": {
-      "type": "string",
-      "description": "セット商品コード"
-    },
-    "SetSalesCommodityName": {
-      "type": "string",
-      "description": "セット販売商品名"
-    },
-    "SetShipmentQty": {
-      "type": "string",
-      "description": "セット出荷数量"
-    },
-    "SetSalesPrice": {
-      "type": "string",
-      "description": "セット販売価格"
-    },
-    "SetOrderCommodityYen": {
-      "type": "string",
-      "description": "セット注文商品金額"
-    },
-    "SetDiscountYen": {
-      "type": "string",
-      "description": "セット割引金額"
-    },
-    "SetOrderCommodityTax": {
-      "type": "string",
-      "description": "セット注文商品税額"
-    },
-    "ArrivalNo": {
-      "type": "string",
-      "description": "入荷番号"
-    },
-    "ArrivalLineNo": {
-      "type": "string",
-      "description": "入荷明細番号"
-    },
-    "Lot1": {
-      "type": "string",
-      "description": "ロット1"
-    },
-    "Lot2": {
-      "type": "string",
-      "description": "ロット2"
-    },
-    "Charge": {
-      "type": "string",
-      "description": "手数料",
-      "pattern": "^[0-9]+$"
-    },
-    "ChargeTax": {
-      "type": "string",
-      "description": "手数料税額",
-      "pattern": "^[0-9]+$"
-    },
-    "Shipping": {
-      "type": "string",
-      "description": "送料",
-      "pattern": "^[0-9]+$"
-    },
-    "ShippingTax": {
-      "type": "string",
-      "description": "送料税額",
-      "pattern": "^[0-9]+$"
-    },
-    "AdvancedYen": {
-      "type": "string",
-      "description": "前払金額",
-      "pattern": "^[0-9]+$"
-    },
-    "StaffSalesFlg": {
-      "type": "string",
-      "description": "スタッフ販売フラグ",
-      "pattern": "^[0-9]+$"
-    },
-    "ShipmentRequestDate": {
-      "type": "string",
-      "description": "出荷依頼日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "OrderReceiptDate": {
-      "type": "string",
-      "description": "注文受付日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "CreateBy": {
-      "type": "string",
-      "description": "作成者"
-    },
-    "PayMethodKbn": {
-      "type": "string",
-      "description": "支払方法区分",
-      "pattern": "^[0-9]+$"
-    },
-    "CreditCardCorpCd": {
-      "type": "string",
-      "description": "クレジットカード会社コード",
-      "pattern": "^[0-9]*$"
-    },
-    "DLVOutForGIFTKbn": {
-      "type": "string",
-      "description": "ギフト配送区分",
-      "pattern": "^[0-1]$"
-    },
-    "CustNo": {
-      "type": "string",
-      "description": "顧客番号",
-      "pattern": "^CUST[0-9]{6}$"
-    },
-    "ZipNo": {
-      "type": "string",
-      "description": "郵便番号",
-      "pattern": "^[0-9]{7}$"
-    },
-    "Adr1": {
-      "type": "string",
-      "description": "住所1（都道府県）"
-    },
-    "Adr2": {
-      "type": "string",
-      "description": "住所2（市区町村）"
-    },
-    "Adr3": {
-      "type": "string",
-      "description": "住所3（町域）"
-    },
-    "Adr4": {
-      "type": "string",
-      "description": "住所4"
-    },
-    "Adr5": {
-      "type": "string",
-      "description": "住所5"
-    },
-    "Adr6": {
-      "type": "string",
-      "description": "住所6"
-    },
-    "TelNo": {
-      "type": "string",
-      "description": "電話番号",
-      "pattern": "^[0-9-]+$"
-    },
-    "CustKanjiName": {
-      "type": "string",
-      "description": "顧客漢字名"
-    },
-    "CustKanaName": {
-      "type": "string",
-      "description": "顧客カナ名"
-    },
-    "ClientZipNo": {
-      "type": "string",
-      "description": "依頼者郵便番号",
-      "pattern": "^[0-9]{7}$"
-    },
-    "ClientAdr1": {
-      "type": "string",
-      "description": "依頼者住所1"
-    },
-    "ClientAdr2": {
-      "type": "string",
-      "description": "依頼者住所2"
-    },
-    "ClientAdr3": {
-      "type": "string",
-      "description": "依頼者住所3"
-    },
-    "ClientAdr4": {
-      "type": "string",
-      "description": "依頼者住所4"
-    },
-    "ClientAdr5": {
-      "type": "string",
-      "description": "依頼者住所5"
-    },
-    "ClientAdr6": {
-      "type": "string",
-      "description": "依頼者住所6"
-    },
-    "ClientTelNo": {
-      "type": "string",
-      "description": "依頼者電話番号",
-      "pattern": "^[0-9-]+$"
-    },
-    "ClientKanjiName": {
-      "type": "string",
-      "description": "依頼者漢字名"
-    },
-    "ClientKanaName": {
-      "type": "string",
-      "description": "依頼者カナ名"
-    },
-    "ClientCorpName": {
-      "type": "string",
-      "description": "依頼者会社名"
-    },
-    "DestZipNo": {
-      "type": "string",
-      "description": "配送先郵便番号",
-      "pattern": "^[0-9]{7}$"
-    },
-    "DestAdr1": {
-      "type": "string",
-      "description": "配送先住所1"
-    },
-    "DestAdr2": {
-      "type": "string",
-      "description": "配送先住所2"
-    },
-    "DestAdr3": {
-      "type": "string",
-      "description": "配送先住所3"
-    },
-    "DestAdr4": {
-      "type": "string",
-      "description": "配送先住所4"
-    },
-    "DestAdr5": {
-      "type": "string",
-      "description": "配送先住所5"
-    },
-    "DestAdr6": {
-      "type": "string",
-      "description": "配送先住所6"
-    },
-    "DestTelNo": {
-      "type": "string",
-      "description": "配送先電話番号",
-      "pattern": "^[0-9-]+$"
-    },
-    "DestKanjiName": {
-      "type": "string",
-      "description": "配送先漢字名"
-    },
-    "DestKanaName": {
-      "type": "string",
-      "description": "配送先カナ名"
-    },
-    "DestCorpName": {
-      "type": "string",
-      "description": "配送先会社名"
-    },
-    "DlvAppointedDate": {
-      "type": "string",
-      "description": "配送指定日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "DlvAppointedTimePerDlvCorpKbn": {
-      "type": "string",
-      "description": "配送会社別配送指定時間区分",
-      "pattern": "^[0-9]{2}$"
-    },
-    "DlvAppointedTimePerDlvCorpName": {
-      "type": "string",
-      "description": "配送会社別配送指定時間名"
-    },
-    "DlvCorpDetailKbn": {
-      "type": "string",
-      "description": "配送会社詳細区分",
-      "pattern": "^[0-9]{3}$"
-    },
-    "ArrivedShopNo1": {
-      "type": "string",
-      "description": "到着店舗番号1",
-      "pattern": "^[0-9]*$"
-    },
-    "ArrivedShopNo2": {
-      "type": "string",
-      "description": "到着店舗番号2"
-    },
-    "LiquidationShopNo1": {
-      "type": "string",
-      "description": "精算店舗番号1"
-    },
-    "LiquidationShopNo2": {
-      "type": "string",
-      "description": "精算店舗番号2"
-    },
-    "DlvInstructionComment": {
-      "type": "string",
-      "description": "配送指示コメント"
-    },
-    "SentenceKbn1": {
-      "type": "string",
-      "description": "文章区分1",
-      "pattern": "^[0-9]{3}$"
-    },
-    "SentenceCd1": {
-      "type": "string",
-      "description": "文章コード1",
-      "pattern": "^[0-9]{5}$"
-    },
-    "SentenceKbn2": {
-      "type": "string",
-      "description": "文章区分2",
-      "pattern": "^[0-9]{3}$"
-    },
-    "SentenceCd2": {
-      "type": "string",
-      "description": "文章コード2",
-      "pattern": "^[0-9]{5}$"
-    },
-    "CustServiceRankName": {
-      "type": "string",
-      "description": "顧客サービスランク名"
-    },
-    "UseEnablePoint": {
-      "type": "string",
-      "description": "利用可能ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "UsePoint": {
-      "type": "string",
-      "description": "利用ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "OccurSchedulePoint": {
-      "type": "string",
-      "description": "発生予定ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "UseSchedulePoint": {
-      "type": "string",
-      "description": "利用予定ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "CampainPoint": {
-      "type": "string",
-      "description": "キャンペーンポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "TotalPoint": {
-      "type": "string",
-      "description": "合計ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "LapseNextMonth": {
-      "type": "string",
-      "description": "翌月失効",
-      "pattern": "^[0-9]{2}$"
-    },
-    "LapseNextMonthPoint": {
-      "type": "string",
-      "description": "翌月失効ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "LapseNextMonth2": {
-      "type": "string",
-      "description": "翌々月失効",
-      "pattern": "^[0-9]{2}$"
-    },
-    "LapseNextMonthPoint2": {
-      "type": "string",
-      "description": "翌々月失効ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "NextDlvDate": {
-      "type": "string",
-      "description": "次回配送日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "NextDlvItemCd1": {
-      "type": "string",
-      "description": "次回配送商品コード1"
-    },
-    "NextDlvSalesCommodityName1": {
-      "type": "string",
-      "description": "次回配送販売商品名1"
-    },
-    "NextDlvShipmentQty1": {
-      "type": "string",
-      "description": "次回配送出荷数量1",
-      "pattern": "^[0-9]*$"
-    },
-    "NextDlvCommoditySalesMethodName1": {
-      "type": "string",
-      "description": "次回配送商品販売方法名1"
-    },
-    "NextDlvOrderCommodityYen1": {
-      "type": "string",
-      "description": "次回配送注文商品金額1",
-      "pattern": "^[0-9]*$"
-    },
-    "NextDlvItemCd2": {
-      "type": "string",
-      "description": "次回配送商品コード2"
-    },
-    "NextDlvSalesCommodityName2": {
-      "type": "string",
-      "description": "次回配送販売商品名2"
-    },
-    "NextDlvShipmentQty2": {
-      "type": "string",
-      "description": "次回配送出荷数量2"
-    },
-    "NextDlvCommoditySalesMethodName2": {
-      "type": "string",
-      "description": "次回配送商品販売方法名2"
-    },
-    "NextDlvOrderCommodityYen2": {
-      "type": "string",
-      "description": "次回配送注文商品金額2"
-    },
-    "NextDlvItemCd3": {
-      "type": "string",
-      "description": "次回配送商品コード3"
-    },
-    "NextDlvSalesCommodityName3": {
-      "type": "string",
-      "description": "次回配送販売商品名3"
-    },
-    "NextDlvShipmentQty3": {
-      "type": "string",
-      "description": "次回配送出荷数量3"
-    },
-    "NextDlvCommoditySalesMethodName3": {
-      "type": "string",
-      "description": "次回配送商品販売方法名3"
-    },
-    "NextDlvOrderCommodityYen3": {
-      "type": "string",
-      "description": "次回配送注文商品金額3"
-    },
-    "NextDlvItemCd4": {
-      "type": "string",
-      "description": "次回配送商品コード4"
-    },
-    "NextDlvSalesCommodityName4": {
-      "type": "string",
-      "description": "次回配送販売商品名4"
-    },
-    "NextDlvShipmentQty4": {
-      "type": "string",
-      "description": "次回配送出荷数量4"
-    },
-    "NextDlvCommoditySalesMethodName4": {
-      "type": "string",
-      "description": "次回配送商品販売方法名4"
-    },
-    "NextDlvOrderCommodityYen4": {
-      "type": "string",
-      "description": "次回配送注文商品金額4"
-    },
-    "NextDlvItemCd5": {
-      "type": "string",
-      "description": "次回配送商品コード5"
-    },
-    "NextDlvSalesCommodityName5": {
-      "type": "string",
-      "description": "次回配送販売商品名5"
-    },
-    "NextDlvShipmentQty5": {
-      "type": "string",
-      "description": "次回配送出荷数量5"
-    },
-    "NextDlvCommoditySalesMethodName5": {
-      "type": "string",
-      "description": "次回配送商品販売方法名5"
-    },
-    "NextDlvOrderCommodityYen5": {
-      "type": "string",
-      "description": "次回配送注文商品金額5"
-    },
-    "NextDlvItemCd6": {
-      "type": "string",
-      "description": "次回配送商品コード6"
-    },
-    "NextDlvSalesCommodityName6": {
-      "type": "string",
-      "description": "次回配送販売商品名6"
-    },
-    "NextDlvShipmentQty6": {
-      "type": "string",
-      "description": "次回配送出荷数量6"
-    },
-    "NextDlvCommoditySalesMethodName6": {
-      "type": "string",
-      "description": "次回配送商品販売方法名6"
-    },
-    "NextDlvOrderCommodityYen6": {
-      "type": "string",
-      "description": "次回配送注文商品金額6"
-    },
-    "NextDlvItemCd7": {
-      "type": "string",
-      "description": "次回配送商品コード7"
-    },
-    "NextDlvSalesCommodityName7": {
-      "type": "string",
-      "description": "次回配送販売商品名7"
-    },
-    "NextDlvShipmentQty7": {
-      "type": "string",
-      "description": "次回配送出荷数量7"
-    },
-    "NextDlvCommoditySalesMethodName7": {
-      "type": "string",
-      "description": "次回配送商品販売方法名7"
-    },
-    "NextDlvOrderCommodityYen7": {
-      "type": "string",
-      "description": "次回配送注文商品金額7"
-    },
-    "NextDlvItemCd8": {
-      "type": "string",
-      "description": "次回配送商品コード8"
-    },
-    "NextDlvSalesCommodityName8": {
-      "type": "string",
-      "description": "次回配送販売商品名8"
-    },
-    "NextDlvShipmentQty8": {
-      "type": "string",
-      "description": "次回配送出荷数量8"
-    },
-    "NextDlvCommoditySalesMethodName8": {
-      "type": "string",
-      "description": "次回配送商品販売方法名8"
-    },
-    "NextDlvOrderCommodityYen8": {
-      "type": "string",
-      "description": "次回配送注文商品金額8"
-    },
-    "NextDlvItemCd9": {
-      "type": "string",
-      "description": "次回配送商品コード9"
-    },
-    "NextDlvSalesCommodityName9": {
-      "type": "string",
-      "description": "次回配送販売商品名9"
-    },
-    "NextDlvShipmentQty9": {
-      "type": "string",
-      "description": "次回配送出荷数量9"
-    },
-    "NextDlvCommoditySalesMethodName9": {
-      "type": "string",
-      "description": "次回配送商品販売方法名9"
-    },
-    "NextDlvOrderCommodityYen9": {
-      "type": "string",
-      "description": "次回配送注文商品金額9"
-    },
-    "NextDlvItemCd10": {
-      "type": "string",
-      "description": "次回配送商品コード10"
-    },
-    "NextDlvSalesCommodityName10": {
-      "type": "string",
-      "description": "次回配送販売商品名10"
-    },
-    "NextDlvShipmentQty10": {
-      "type": "string",
-      "description": "次回配送出荷数量10"
-    },
-    "NextDlvCommoditySalesMethodName10": {
-      "type": "string",
-      "description": "次回配送商品販売方法名10"
-    },
-    "NextDlvOrderCommodityYen10": {
-      "type": "string",
-      "description": "次回配送注文商品金額10"
-    },
-    "SentenceKbn3": {
-      "type": "string",
-      "description": "文章区分3",
-      "pattern": "^[0-9]{3}$"
-    },
-    "SentenceCd3": {
-      "type": "string",
-      "description": "文章コード3",
-      "pattern": "^[0-9]{5}$"
-    },
-    "SentenceKbn4": {
-      "type": "string",
-      "description": "文章区分4",
-      "pattern": "^[0-9]{3}$"
-    },
-    "SentenceCd4": {
-      "type": "string",
-      "description": "文章コード4",
-      "pattern": "^[0-9]{5}$"
-    },
-    "DataCreateDate": {
-      "type": "string",
-      "description": "データ作成日時",
-      "pattern": "^[0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}$"
-    },
-    "ExtKbnName": {
-      "type": "string",
-      "description": "拡張区分名"
-    },
-    "InspectMemo": {
-      "type": "string",
-      "description": "検品メモ"
-    },
-    "OCRCd": {
-      "type": "string",
-      "description": "OCRコード"
-    },
-    "EAN128Cd": {
-      "type": "string",
-      "description": "EAN128コード",
-      "pattern": "^[0-9]*$"
-    },
-    "PayDeadlineDate": {
-      "type": "string",
-      "description": "支払期限日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "OrderPriceCutYen": {
-      "type": "string",
-      "description": "注文価格カット金額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReportScheduleDate": {
-      "type": "string",
-      "description": "レポート予定日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "PointLapseScheduleDate": {
-      "type": "string",
-      "description": "ポイント失効予定日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "PointLapseSchedulePoint": {
-      "type": "string",
-      "description": "ポイント失効予定ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "RankEndDate": {
-      "type": "string",
-      "description": "ランク終了日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "SaleYenYear": {
-      "type": "string",
-      "description": "年間売上金額",
-      "pattern": "^[0-9]+$"
-    },
-    "PointOccurComment": {
-      "type": "string",
-      "description": "ポイント発生コメント"
-    },
-    "DestJISCd": {
-      "type": "string",
-      "description": "配送先JISコード",
-      "pattern": "^[0-9]{5}$"
-    },
-    "NextDlvCharge": {
-      "type": "string",
-      "description": "次回配送手数料",
-      "pattern": "^[0-9]+$"
-    },
-    "PurchaseListKbn": {
-      "type": "string",
-      "description": "購入リスト区分",
-      "pattern": "^[0-9]{2}$"
-    },
-    "RankJudgeTotalSalesYen": {
-      "type": "string",
-      "description": "ランク判定合計売上金額",
-      "pattern": "^[0-9]+$"
-    },
-    "PromoCd": {
-      "type": "string",
-      "description": "プロモーションコード"
-    },
-    "PromoName": {
-      "type": "string",
-      "description": "プロモーション名"
-    },
-    "TaxRateKbn": {
-      "type": "string",
-      "description": "税率区分",
-      "pattern": "^[0-9]+$"
-    },
-    "TaxTaxKbn": {
-      "type": "string",
-      "description": "税税区分",
-      "pattern": "^[0-9]+$"
-    },
-    "DlvCorpAppointedKbn": {
-      "type": "string",
-      "description": "配送会社指定区分",
-      "pattern": "^[0-9]+$"
-    },
-    "YobiKbn": {
-      "type": "string",
-      "description": "予備区分"
-    },
-    "RepeatCustFlg": {
-      "type": "string",
-      "description": "リピート顧客フラグ",
-      "pattern": "^[0-9]+$"
-    },
-    "StandardUsePointTax": {
-      "type": "string",
-      "description": "標準利用ポイント税額",
-      "pattern": "^[0-9]+$"
-    },
-    "StandardDiffTax": {
-      "type": "string",
-      "description": "標準差額税額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReducedUsePoint": {
-      "type": "string",
-      "description": "軽減利用ポイント",
-      "pattern": "^[0-9]+$"
-    },ファイルが途中で切れてしまったようです。完全なJSON Schemaを再作成します。
-
-<write_to_file>
-<path>src/main/resources/shipment-schema.json</path>
-<content>
-{
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "type": "object",
-  "title": "出荷指示情報スキーマ",
-  "description": "IFIDC0006 出荷指示情報のJSONスキーマ",
-  "properties": {
-    "DataKbn": {
-      "type": "string",
-      "description": "データ区分",
-      "pattern": "^[0-9]+$"
-    },
-    "UpdateKbn": {
-      "type": "string",
-      "description": "更新区分",
-      "pattern": "^[0-9]+$"
-    },
-    "ShipmentKbn": {
-      "type": "string",
-      "description": "出荷区分",
-      "pattern": "^[0-9]+$"
-    },
-    "ShopOrderDate": {
-      "type": "string",
-      "description": "店舗注文日"
-    },
-    "DeliveryScheDate": {
-      "type": "string",
-      "description": "配送予定日"
-    },
-    "DlvCorpCd": {
-      "type": "string",
-      "description": "配送会社コード",
-      "pattern": "^[0-9]{2}$"
-    },
-    "DlvBaseKbn": {
-      "type": "string",
-      "description": "配送拠点区分",
-      "pattern": "^[0-9]+$"
-    },
-    "ShopCd": {
-      "type": "string",
-      "description": "店舗コード"
-    },
-    "ShipmentNo": {
-      "type": "string",
-      "description": "出荷番号",
-      "pattern": "^[0-9]{13}$"
-    },
-    "ShipmentLineSeq": {
-      "type": "string",
-      "description": "出荷明細連番",
-      "pattern": "^[0-9]+$"
-    },
-    "ShipmentLineNo": {
-      "type": "string",
-      "description": "出荷明細番号",
-      "pattern": "^[0-9]+$"
-    },
-    "SetCommodityKbn": {
-      "type": "string",
-      "description": "セット商品区分",
-      "pattern": "^[0-1]$"
-    },
-    "ItemCd": {
-      "type": "string",
-      "description": "商品コード"
-    },
-    "SalesCommodityName": {
-      "type": "string",
-      "description": "販売商品名"
-    },
-    "ShipmentQty": {
-      "type": "string",
-      "description": "出荷数量",
-      "pattern": "^[0-9]+$"
-    },
-    "SalesPrice": {
-      "type": "string",
-      "description": "販売価格",
-      "pattern": "^[0-9]+$"
-    },
-    "OrderCommodityYen": {
-      "type": "string",
-      "description": "注文商品金額",
-      "pattern": "^[0-9]+$"
-    },
-    "DiscountYen": {
-      "type": "string",
-      "description": "割引金額",
-      "pattern": "^[0-9]+$"
-    },
-    "OrderCommodityTax": {
-      "type": "string",
-      "description": "注文商品税額",
-      "pattern": "^[0-9]+$"
-    },
-    "WrappingServiceName": {
-      "type": "string",
-      "description": "包装サービス名"
-    },
-    "WrappingFee": {
-      "type": "string",
-      "description": "包装料金",
-      "pattern": "^[0-9]*$"
-    },
-    "WrappingFeeTax": {
-      "type": "string",
-      "description": "包装料金税額",
-      "pattern": "^[0-9]*$"
-    },
-    "SetItemCd": {
-      "type": "string",
-      "description": "セット商品コード"
-    },
-    "SetSalesCommodityName": {
-      "type": "string",
-      "description": "セット販売商品名"
-    },
-    "SetShipmentQty": {
-      "type": "string",
-      "description": "セット出荷数量"
-    },
-    "SetSalesPrice": {
-      "type": "string",
-      "description": "セット販売価格"
-    },
-    "SetOrderCommodityYen": {
-      "type": "string",
-      "description": "セット注文商品金額"
-    },
-    "SetDiscountYen": {
-      "type": "string",
-      "description": "セット割引金額"
-    },
-    "SetOrderCommodityTax": {
-      "type": "string",
-      "description": "セット注文商品税額"
-    },
-    "ArrivalNo": {
-      "type": "string",
-      "description": "入荷番号"
-    },
-    "ArrivalLineNo": {
-      "type": "string",
-      "description": "入荷明細番号"
-    },
-    "Lot1": {
-      "type": "string",
-      "description": "ロット1"
-    },
-    "Lot2": {
-      "type": "string",
-      "description": "ロット2"
-    },
-    "Charge": {
-      "type": "string",
-      "description": "手数料",
-      "pattern": "^[0-9]+$"
-    },
-    "ChargeTax": {
-      "type": "string",
-      "description": "手数料税額",
-      "pattern": "^[0-9]+$"
-    },
-    "Shipping": {
-      "type": "string",
-      "description": "送料",
-      "pattern": "^[0-9]+$"
-    },
-    "ShippingTax": {
-      "type": "string",
-      "description": "送料税額",
-      "pattern": "^[0-9]+$"
-    },
-    "AdvancedYen": {
-      "type": "string",
-      "description": "前払金額",
-      "pattern": "^[0-9]+$"
-    },
-    "StaffSalesFlg": {
-      "type": "string",
-      "description": "スタッフ販売フラグ",
-      "pattern": "^[0-9]+$"
-    },
-    "ShipmentRequestDate": {
-      "type": "string",
-      "description": "出荷依頼日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "OrderReceiptDate": {
-      "type": "string",
-      "description": "注文受付日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "CreateBy": {
-      "type": "string",
-      "description": "作成者"
-    },
-    "PayMethodKbn": {
-      "type": "string",
-      "description": "支払方法区分",
-      "pattern": "^[0-9]+$"
-    },
-    "CreditCardCorpCd": {
-      "type": "string",
-      "description": "クレジットカード会社コード",
-      "pattern": "^[0-9]*$"
-    },
-    "DLVOutForGIFTKbn": {
-      "type": "string",
-      "description": "ギフト配送区分",
-      "pattern": "^[0-1]$"
-    },
-    "CustNo": {
-      "type": "string",
-      "description": "顧客番号",
-      "pattern": "^CUST[0-9]{6}$"
-    },
-    "ZipNo": {
-      "type": "string",
-      "description": "郵便番号",
-      "pattern": "^[0-9]{7}$"
-    },
-    "Adr1": {
-      "type": "string",
-      "description": "住所1（都道府県）"
-    },
-    "Adr2": {
-      "type": "string",
-      "description": "住所2（市区町村）"
-    },
-    "Adr3": {
-      "type": "string",
-      "description": "住所3（町域）"
-    },
-    "Adr4": {
-      "type": "string",
-      "description": "住所4"
-    },
-    "Adr5": {
-      "type": "string",
-      "description": "住所5"
-    },
-    "Adr6": {
-      "type": "string",
-      "description": "住所6"
-    },
-    "TelNo": {
-      "type": "string",
-      "description": "電話番号",
-      "pattern": "^[0-9-]+$"
-    },
-    "CustKanjiName": {
-      "type": "string",
-      "description": "顧客漢字名"
-    },
-    "CustKanaName": {
-      "type": "string",
-      "description": "顧客カナ名"
-    },
-    "ClientZipNo": {
-      "type": "string",
-      "description": "依頼者郵便番号",
-      "pattern": "^[0-9]{7}$"
-    },
-    "ClientAdr1": {
-      "type": "string",
-      "description": "依頼者住所1"
-    },
-    "ClientAdr2": {
-      "type": "string",
-      "description": "依頼者住所2"
-    },
-    "ClientAdr3": {
-      "type": "string",
-      "description": "依頼者住所3"
-    },
-    "ClientAdr4": {
-      "type": "string",
-      "description": "依頼者住所4"
-    },
-    "ClientAdr5": {
-      "type": "string",
-      "description": "依頼者住所5"
-    },
-    "ClientAdr6": {
-      "type": "string",
-      "description": "依頼者住所6"
-    },
-    "ClientTelNo": {
-      "type": "string",
-      "description": "依頼者電話番号",
-      "pattern": "^[0-9-]+$"
-    },
-    "ClientKanjiName": {
-      "type": "string",
-      "description": "依頼者漢字名"
-    },
-    "ClientKanaName": {
-      "type": "string",
-      "description": "依頼者カナ名"
-    },
-    "ClientCorpName": {
-      "type": "string",
-      "description": "依頼者会社名"
-    },
-    "DestZipNo": {
-      "type": "string",
-      "description": "配送先郵便番号",
-      "pattern": "^[0-9]{7}$"
-    },
-    "DestAdr1": {
-      "type": "string",
-      "description": "配送先住所1"
-    },
-    "DestAdr2": {
-      "type": "string",
-      "description": "配送先住所2"
-    },
-    "DestAdr3": {
-      "type": "string",
-      "description": "配送先住所3"
-    },
-    "DestAdr4": {
-      "type": "string",
-      "description": "配送先住所4"
-    },
-    "DestAdr5": {
-      "type": "string",
-      "description": "配送先住所5"
-    },
-    "DestAdr6": {
-      "type": "string",
-      "description": "配送先住所6"
-    },
-    "DestTelNo": {
-      "type": "string",
-      "description": "配送先電話番号",
-      "pattern": "^[0-9-]+$"
-    },
-    "DestKanjiName": {
-      "type": "string",
-      "description": "配送先漢字名"
-    },
-    "DestKanaName": {
-      "type": "string",
-      "description": "配送先カナ名"
-    },
-    "DestCorpName": {
-      "type": "string",
-      "description": "配送先会社名"
-    },
-    "DlvAppointedDate": {
-      "type": "string",
-      "description": "配送指定日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "DlvAppointedTimePerDlvCorpKbn": {
-      "type": "string",
-      "description": "配送会社別配送指定時間区分",
-      "pattern": "^[0-9]{2}$"
-    },
-    "DlvAppointedTimePerDlvCorpName": {
-      "type": "string",
-      "description": "配送会社別配送指定時間名"
-    },
-    "DlvCorpDetailKbn": {
-      "type": "string",
-      "description": "配送会社詳細区分",
-      "pattern": "^[0-9]{3}$"
-    },
-    "ArrivedShopNo1": {
-      "type": "string",
-      "description": "到着店舗番号1",
-      "pattern": "^[0-9]*$"
-    },
-    "ArrivedShopNo2": {
-      "type": "string",
-      "description": "到着店舗番号2"
-    },
-    "LiquidationShopNo1": {
-      "type": "string",
-      "description": "精算店舗番号1"
-    },
-    "LiquidationShopNo2": {
-      "type": "string",
-      "description": "精算店舗番号2"
-    },
-    "DlvInstructionComment": {
-      "type": "string",
-      "description": "配送指示コメント"
-    },
-    "SentenceKbn1": {
-      "type": "string",
-      "description": "文章区分1",
-      "pattern": "^[0-9]{3}$"
-    },
-    "SentenceCd1": {
-      "type": "string",
-      "description": "文章コード1",
-      "pattern": "^[0-9]{5}$"
-    },
-    "SentenceKbn2": {
-      "type": "string",
-      "description": "文章区分2",
-      "pattern": "^[0-9]{3}$"
-    },
-    "SentenceCd2": {
-      "type": "string",
-      "description": "文章コード2",
-      "pattern": "^[0-9]{5}$"
-    },
-    "CustServiceRankName": {
-      "type": "string",
-      "description": "顧客サービスランク名"
-    },
-    "UseEnablePoint": {
-      "type": "string",
-      "description": "利用可能ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "UsePoint": {
-      "type": "string",
-      "description": "利用ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "OccurSchedulePoint": {
-      "type": "string",
-      "description": "発生予定ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "UseSchedulePoint": {
-      "type": "string",
-      "description": "利用予定ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "CampainPoint": {
-      "type": "string",
-      "description": "キャンペーンポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "TotalPoint": {
-      "type": "string",
-      "description": "合計ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "LapseNextMonth": {
-      "type": "string",
-      "description": "翌月失効",
-      "pattern": "^[0-9]{2}$"
-    },
-    "LapseNextMonthPoint": {
-      "type": "string",
-      "description": "翌月失効ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "LapseNextMonth2": {
-      "type": "string",
-      "description": "翌々月失効",
-      "pattern": "^[0-9]{2}$"
-    },
-    "LapseNextMonthPoint2": {
-      "type": "string",
-      "description": "翌々月失効ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "NextDlvDate": {
-      "type": "string",
-      "description": "次回配送日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "NextDlvItemCd1": {
-      "type": "string",
-      "description": "次回配送商品コード1"
-    },
-    "NextDlvSalesCommodityName1": {
-      "type": "string",
-      "description": "次回配送販売商品名1"
-    },
-    "NextDlvShipmentQty1": {
-      "type": "string",
-      "description": "次回配送出荷数量1",
-      "pattern": "^[0-9]*$"
-    },
-    "NextDlvCommoditySalesMethodName1": {
-      "type": "string",
-      "description": "次回配送商品販売方法名1"
-    },
-    "NextDlvOrderCommodityYen1": {
-      "type": "string",
-      "description": "次回配送注文商品金額1",
-      "pattern": "^[0-9]*$"
-    },
-    "NextDlvItemCd2": {
-      "type": "string",
-      "description": "次回配送商品コード2"
-    },
-    "NextDlvSalesCommodityName2": {
-      "type": "string",
-      "description": "次回配送販売商品名2"
-    },
-    "NextDlvShipmentQty2": {
-      "type": "string",
-      "description": "次回配送出荷数量2"
-    },
-    "NextDlvCommoditySalesMethodName2": {
-      "type": "string",
-      "description": "次回配送商品販売方法名2"
-    },
-    "NextDlvOrderCommodityYen2": {
-      "type": "string",
-      "description": "次回配送注文商品金額2"
-    },
-    "NextDlvItemCd3": {
-      "type": "string",
-      "description": "次回配送商品コード3"
-    },
-    "NextDlvSalesCommodityName3": {
-      "type": "string",
-      "description": "次回配送販売商品名3"
-    },
-    "NextDlvShipmentQty3": {
-      "type": "string",
-      "description": "次回配送出荷数量3"
-    },
-    "NextDlvCommoditySalesMethodName3": {
-      "type": "string",
-      "description": "次回配送商品販売方法名3"
-    },
-    "NextDlvOrderCommodityYen3": {
-      "type": "string",
-      "description": "次回配送注文商品金額3"
-    },
-    "NextDlvItemCd4": {
-      "type": "string",
-      "description": "次回配送商品コード4"
-    },
-    "NextDlvSalesCommodityName4": {
-      "type": "string",
-      "description": "次回配送販売商品名4"
-    },
-    "NextDlvShipmentQty4": {
-      "type": "string",
-      "description": "次回配送出荷数量4"
-    },
-    "NextDlvCommoditySalesMethodName4": {
-      "type": "string",
-      "description": "次回配送商品販売方法名4"
-    },
-    "NextDlvOrderCommodityYen4": {
-      "type": "string",
-      "description": "次回配送注文商品金額4"
-    },
-    "NextDlvItemCd5": {
-      "type": "string",
-      "description": "次回配送商品コード5"
-    },
-    "NextDlvSalesCommodityName5": {
-      "type": "string",
-      "description": "次回配送販売商品名5"
-    },
-    "NextDlvShipmentQty5": {
-      "type": "string",
-      "description": "次回配送出荷数量5"
-    },
-    "NextDlvCommoditySalesMethodName5": {
-      "type": "string",
-      "description": "次回配送商品販売方法名5"
-    },
-    "NextDlvOrderCommodityYen5": {
-      "type": "string",
-      "description": "次回配送注文商品金額5"
-    },
-    "NextDlvItemCd6": {
-      "type": "string",
-      "description": "次回配送商品コード6"
-    },
-    "NextDlvSalesCommodityName6": {
-      "type": "string",
-      "description": "次回配送販売商品名6"
-    },
-    "NextDlvShipmentQty6": {
-      "type": "string",
-      "description": "次回配送出荷数量6"
-    },
-    "NextDlvCommoditySalesMethodName6": {
-      "type": "string",
-      "description": "次回配送商品販売方法名6"
-    },
-    "NextDlvOrderCommodityYen6": {
-      "type": "string",
-      "description": "次回配送注文商品金額6"
-    },
-    "NextDlvItemCd7": {
-      "type": "string",
-      "description": "次回配送商品コード7"
-    },
-    "NextDlvSalesCommodityName7": {
-      "type": "string",
-      "description": "次回配送販売商品名7"
-    },
-    "NextDlvShipmentQty7": {
-      "type": "string",
-      "description": "次回配送出荷数量7"
-    },
-    "NextDlvCommoditySalesMethodName7": {
-      "type": "string",
-      "description": "次回配送商品販売方法名7"
-    },
-    "NextDlvOrderCommodityYen7": {
-      "type": "string",
-      "description": "次回配送注文商品金額7"
-    },
-    "NextDlvItemCd8": {
-      "type": "string",
-      "description": "次回配送商品コード8"
-    },
-    "NextDlvSalesCommodityName8": {
-      "type": "string",
-      "description": "次回配送販売商品名8"
-    },
-    "NextDlvShipmentQty8": {
-      "type": "string",
-      "description": "次回配送出荷数量8"
-    },
-    "NextDlvCommoditySalesMethodName8": {
-      "type": "string",
-      "description": "次回配送商品販売方法名8"
-    },
-    "NextDlvOrderCommodityYen8": {
-      "type": "string",
-      "description": "次回配送注文商品金額8"
-    },
-    "NextDlvItemCd9": {
-      "type": "string",
-      "description": "次回配送商品コード9"
-    },
-    "NextDlvSalesCommodityName9": {
-      "type": "string",
-      "description": "次回配送販売商品名9"
-    },
-    "NextDlvShipmentQty9": {
-      "type": "string",
-      "description": "次回配送出荷数量9"
-    },
-    "NextDlvCommoditySalesMethodName9": {
-      "type": "string",
-      "description": "次回配送商品販売方法名9"
-    },
-    "NextDlvOrderCommodityYen9": {
-      "type": "string",
-      "description": "次回配送注文商品金額9"
-    },
-    "NextDlvItemCd10": {
-      "type": "string",
-      "description": "次回配送商品コード10"
-    },
-    "NextDlvSalesCommodityName10": {
-      "type": "string",
-      "description": "次回配送販売商品名10"
-    },
-    "NextDlvShipmentQty10": {
-      "type": "string",
-      "description": "次回配送出荷数量10"
-    },
-    "NextDlvCommoditySalesMethodName10": {
-      "type": "string",
-      "description": "次回配送商品販売方法名10"
-    },
-    "NextDlvOrderCommodityYen10": {
-      "type": "string",
-      "description": "次回配送注文商品金額10"
-    },
-    "SentenceKbn3": {
-      "type": "string",
-      "description": "文章区分3",
-      "pattern": "^[0-9]{3}$"
-    },
-    "SentenceCd3": {
-      "type": "string",
-      "description": "文章コード3",
-      "pattern": "^[0-9]{5}$"
-    },
-    "SentenceKbn4": {
-      "type": "string",
-      "description": "文章区分4",
-      "pattern": "^[0-9]{3}$"
-    },
-    "SentenceCd4": {
-      "type": "string",
-      "description": "文章コード4",
-      "pattern": "^[0-9]{5}$"
-    },
-    "DataCreateDate": {
-      "type": "string",
-      "description": "データ作成日時",
-      "pattern": "^[0-9]{4}/[0-9]{2}/[0-9]{2} [0-9]{2}:[0-9]{2}$"
-    },
-    "ExtKbnName": {
-      "type": "string",
-      "description": "拡張区分名"
-    },
-    "InspectMemo": {
-      "type": "string",
-      "description": "検品メモ"
-    },
-    "OCRCd": {
-      "type": "string",
-      "description": "OCRコード"
-    },
-    "EAN128Cd": {
-      "type": "string",
-      "description": "EAN128コード",
-      "pattern": "^[0-9]*$"
-    },
-    "PayDeadlineDate": {
-      "type": "string",
-      "description": "支払期限日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "OrderPriceCutYen": {
-      "type": "string",
-      "description": "注文価格カット金額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReportScheduleDate": {
-      "type": "string",
-      "description": "レポート予定日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "PointLapseScheduleDate": {
-      "type": "string",
-      "description": "ポイント失効予定日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "PointLapseSchedulePoint": {
-      "type": "string",
-      "description": "ポイント失効予定ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "RankEndDate": {
-      "type": "string",
-      "description": "ランク終了日",
-      "pattern": "^[0-9]{8}$"
-    },
-    "SaleYenYear": {
-      "type": "string",
-      "description": "年間売上金額",
-      "pattern": "^[0-9]+$"
-    },
-    "PointOccurComment": {
-      "type": "string",
-      "description": "ポイント発生コメント"
-    },
-    "DestJISCd": {
-      "type": "string",
-      "description": "配送先JISコード",
-      "pattern": "^[0-9]{5}$"
-    },
-    "NextDlvCharge": {
-      "type": "string",
-      "description": "次回配送手数料",
-      "pattern": "^[0-9]+$"
-    },
-    "PurchaseListKbn": {
-      "type": "string",
-      "description": "購入リスト区分",
-      "pattern": "^[0-9]{2}$"
-    },
-    "RankJudgeTotalSalesYen": {
-      "type": "string",
-      "description": "ランク判定合計売上金額",
-      "pattern": "^[0-9]+$"
-    },
-    "PromoCd": {
-      "type": "string",
-      "description": "プロモーションコード"
-    },
-    "PromoName": {
-      "type": "string",
-      "description": "プロモーション名"
-    },
-    "TaxRateKbn": {
-      "type": "string",
-      "description": "税率区分",
-      "pattern": "^[0-9]+$"
-    },
-    "TaxTaxKbn": {
-      "type": "string",
-      "description": "税税区分",
-      "pattern": "^[0-9]+$"
-    },
-    "DlvCorpAppointedKbn": {
-      "type": "string",
-      "description": "配送会社指定区分",
-      "pattern": "^[0-9]+$"
-    },
-    "YobiKbn": {
-      "type": "string",
-      "description": "予備区分"
-    },
-    "RepeatCustFlg": {
-      "type": "string",
-      "description": "リピート顧客フラグ",
-      "pattern": "^[0-9]+$"
-    },
-    "StandardUsePointTax": {
-      "type": "string",
-      "description": "標準利用ポイント税額",
-      "pattern": "^[0-9]+$"
-    },
-    "StandardDiffTax": {
-      "type": "string",
-      "description": "標準差額税額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReducedUsePoint": {
-      "type": "string",
-      "description": "軽減利用ポイント",
-      "pattern": "^[0-9]+$"
-    },
-    "ReducedUsePointTax": {
-      "type": "string",
-      "description": "軽減利用ポイント税額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReducedDiffYen": {
-      "type": "string",
-      "description": "軽減差額金額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReducedDiffTax": {
-      "type": "string",
-      "description": "軽減差額税額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReducedTaxRateFlg": {
-      "type": "string",
-      "description": "軽減税率フラグ",
-      "pattern": "^[0-9]+$"
-    },
-    "StandardOrderYen": {
-      "type": "string",
-      "description": "標準注文金額",
-      "pattern": "^[0-9]+$"
-    },
-    "StandardOrderTax": {
-      "type": "string",
-      "description": "標準注文税額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReducedOrderYen": {
-      "type": "string",
-      "description": "軽減注文金額",
-      "pattern": "^[0-9]+$"
-    },
-    "ReducedOrderTax": {
-      "type": "string",
-      "description": "軽減注文税額",
-      "pattern": "^[0-9]+$"
-    }
-  },
-  "required": [],
-  "additionalProperties": false
+  "title": "ShipmentDataArray",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "DataKbn": { "type": "integer" },
+      "UpdateKbn": { "type": "integer" },
+      "ShipmentKbn": { "type": "integer" },
+      "ShopOrderDate": { "type": ["string", "null"], "format": "date" },
+      "DeliveryScheDate": { "type": ["string", "null"], "format": "date" },
+      "DlvCorpCd": { "type": ["string", "null"] },
+      "DlvBaseKbn": { "type": ["integer", "null"] },
+      "ShopCd": { "type": ["string", "null"] },
+      "ShipmentNo": { "type": "string" },
+      "ShipmentLineSeq": { "type": "integer" },
+      "ShipmentLineNo": { "type": ["string", "null"] },
+      "SetCommodityKbn": { "type": ["integer", "null"] },
+      "ItemCd": { "type": "string" },
+      "SalesCommodityName": { "type": "string" },
+      "ShipmentQty": { "type": "number" },
+      "SalesPrice": { "type": "number" },
+      "OrderCommodityYen": { "type": "number" },
+      "DiscountYen": { "type": "number" },
+      "OrderCommodityTax": { "type": "number" },
+      "WrappingServiceName": { "type": ["string", "null"] },
+      "WrappingFee": { "type": ["number", "null"] },
+      "WrappingFeeTax": { "type": ["number", "null"] },
+      "SetItemCd": { "type": ["string", "null"] },
+      "SetSalesCommodityName": { "type": ["string", "null"] },
+      "SetShipmentQty": { "type": ["number", "null"] },
+      "SetSalesPrice": { "type": ["number", "null"] },
+      "SetOrderCommodityYen": { "type": ["number", "null"] },
+      "SetDiscountYen": { "type": ["number", "null"] },
+      "SetOrderCommodityTax": { "type": ["number", "null"] },
+      "ArrivalNo": { "type": ["string", "null"] },
+      "ArrivalLineNo": { "type": ["string", "null"] },
+      "Lot1": { "type": ["string", "null"] },
+      "Lot2": { "type": ["string", "null"] },
+      "Charge": { "type": "number" },
+      "ChargeTax": { "type": "number" },
+      "Shipping": { "type": "number" },
+      "ShippingTax": { "type": "number" },
+      "AdvancedYen": { "type": "number" },
+      "StaffSalesFlg": { "type": ["integer", "null"] },
+      "ShipmentRequestDate": { "type": ["string", "null"], "format": "date" },
+      "OrderReceiptDate": { "type": ["string", "null"], "format": "date" },
+      "CreateBy": { "type": ["string", "null"] },
+      "PayMethodKbn": { "type": ["integer", "null"] },
+      "CreditCardCorpCd": { "type": ["string", "null"] },
+      "DLVOutForGIFTKbn": { "type": ["integer", "null"] },
+      "CustNo": { "type": "string" },
+      "ZipNo": { "type": "string" },
+      "Adr1": { "type": "string" },
+      "Adr2": { "type": "string" },
+      "Adr3": { "type": "string" },
+      "Adr4": { "type": ["string", "null"] },
+      "Adr5": { "type": ["string", "null"] },
+      "Adr6": { "type": ["string", "null"] },
+      "TelNo": { "type": "string" },
+      "CustKanjiName": { "type": "string" },
+      "CustKanaName": { "type": "string" },
+      "ClientZipNo": { "type": "string" },
+      "ClientAdr1": { "type": "string" },
+      "ClientAdr2": { "type": "string" },
+      "ClientAdr3": { "type": "string" },
+      "ClientAdr4": { "type": ["string", "null"] },
+      "ClientAdr5": { "type": ["string", "null"] },
+      "ClientAdr6": { "type": ["string", "null"] },
+      "ClientTelNo": { "type": "string" },
+      "ClientKanjiName": { "type": "string" },
+      "ClientKanaName": { "type": "string" },
+      "ClientCorpName": { "type": ["string", "null"] },
+      "DestZipNo": { "type": "string" },
+      "DestAdr1": { "type": "string" },
+      "DestAdr2": { "type": "string" },
+      "DestAdr3": { "type": "string" },
+      "DestAdr4": { "type": ["string", "null"] },
+      "DestAdr5": { "type": ["string", "null"] },
+      "DestAdr6": { "type": ["string", "null"] },
+      "DestTelNo": { "type": "string" },
+      "DestKanjiName": { "type": "string" },
+      "DestKanaName": { "type": "string" },
+      "DestCorpName": { "type": ["string", "null"] },
+      "DlvAppointedDate": { "type": ["string", "null"], "format": "date" },
+      "DlvAppointedTimePerDlvCorpKbn": { "type": ["string", "null"] },
+      "DlvAppointedTimePerDlvCorpName": { "type": ["string", "null"] },
+      "DlvCorpDetailKbn": { "type": ["string", "null"] },
+      "ArrivedShopNo1": { "type": ["string", "null"] },
+      "ArrivedShopNo2": { "type": ["string", "null"] },
+      "LiquidationShopNo1": { "type": ["string", "null"] },
+      "LiquidationShopNo2": { "type": ["string", "null"] },
+      "DlvInstructionComment": { "type": ["string", "null"] },
+      "SentenceKbn1": { "type": ["string", "null"] },
+      "SentenceCd1": { "type": ["string", "null"] },
+      "SentenceKbn2": { "type": ["string", "null"] },
+      "SentenceCd2": { "type": ["string", "null"] },
+      "CustServiceRankName": { "type": ["string", "null"] },
+      "UseEnablePoint": { "type": ["number", "null"] },
+      "UsePoint": { "type": ["number", "null"] },
+      "OccurSchedulePoint": { "type": ["number", "null"] },
+      "UseSchedulePoint": { "type": ["number", "null"] },
+      "CampainPoint": { "type": ["number", "null"] },
+      "TotalPoint": { "type": ["number", "null"] },
+      "LapseNextMonth": { "type": ["number", "null"] },
+      "LapseNextMonthPoint": { "type": ["number", "null"] },
+      "LapseNextMonth2": { "type": ["number", "null"] },
+      "LapseNextMonthPoint2": { "type": ["number", "null"] },
+      "NextDlvDate": { "type": ["string", "null"], "format": "date" },
+      "NextDlvItemCd1": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName1": { "type": ["string", "null"] },
+      "NextDlvShipmentQty1": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName1": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen1": { "type": ["number", "null"] },
+      "NextDlvItemCd2": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName2": { "type": ["string", "null"] },
+      "NextDlvShipmentQty2": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName2": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen2": { "type": ["number", "null"] },
+      "NextDlvItemCd3": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName3": { "type": ["string", "null"] },
+      "NextDlvShipmentQty3": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName3": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen3": { "type": ["number", "null"] },
+      "NextDlvItemCd4": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName4": { "type": ["string", "null"] },
+      "NextDlvShipmentQty4": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName4": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen4": { "type": ["number", "null"] },
+      "NextDlvItemCd5": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName5": { "type": ["string", "null"] },
+      "NextDlvShipmentQty5": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName5": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen5": { "type": ["number", "null"] },
+      "NextDlvItemCd6": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName6": { "type": ["string", "null"] },
+      "NextDlvShipmentQty6": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName6": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen6": { "type": ["number", "null"] },
+      "NextDlvItemCd7": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName7": { "type": ["string", "null"] },
+      "NextDlvShipmentQty7": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName7": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen7": { "type": ["number", "null"] },
+      "NextDlvItemCd8": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName8": { "type": ["string", "null"] },
+      "NextDlvShipmentQty8": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName8": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen8": { "type": ["number", "null"] },
+      "NextDlvItemCd9": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName9": { "type": ["string", "null"] },
+      "NextDlvShipmentQty9": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName9": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen9": { "type": ["number", "null"] },
+      "NextDlvItemCd10": { "type": ["string", "null"] },
+      "NextDlvSalesCommodityName10": { "type": ["string", "null"] },
+      "NextDlvShipmentQty10": { "type": ["number", "null"] },
+      "NextDlvCommoditySalesMethodName10": { "type": ["string", "null"] },
+      "NextDlvOrderCommodityYen10": { "type": ["number", "null"] },
+      "SentenceKbn3": { "type": ["string", "null"] },
+      "SentenceCd3": { "type": ["string", "null"] },
+      "SentenceKbn4": { "type": ["string", "null"] },
+      "SentenceCd4": { "type": ["string", "null"] },
+      "DataCreateDate": { "type": ["string", "null"], "format": "date-time" },
+      "ExtKbnName": { "type": ["string", "null"] },
+      "InspectMemo": { "type": ["string", "null"] },
+      "OCRCd": { "type": ["string", "null"] },
+      "EAN128Cd": { "type": ["string", "null"] },
+      "PayDeadlineDate": { "type": ["string", "null"], "format": "date" },
+      "OrderPriceCutYen": { "type": ["number", "null"] },
+      "ReportScheduleDate": { "type": ["string", "null"], "format": "date" },
+      "PointLapseScheduleDate": { "type": ["string", "null"], "format": "date" },
+      "PointLapseSchedulePoint": { "type": ["number", "null"] },
+      "RankEndDate": { "type": ["string", "null"], "format": "date" },
+      "SaleYenYear": { "type": ["number", "null"] },
+      "PointOccurComment": { "type": ["string", "null"] },
+      "DestJISCd": { "type": ["string", "null"] },
+      "NextDlvCharge": { "type": ["number", "null"] },
+      "PurchaseListKbn": { "type": ["integer", "null"] },
+      "RankJudgeTotalSalesYen": { "type": ["number", "null"] },
+      "PromoCd": { "type": ["string", "null"] },
+      "PromoName": { "type": ["string", "null"] },
+      "TaxRateKbn": { "type": ["integer", "null"] },
+      "TaxTaxKbn": { "type": ["integer", "null"] },
+      "DlvCorpAppointedKbn": { "type": ["integer", "null"] },
+      "YobiKbn": { "type": ["integer", "null"] },
+      "RepeatCustFlg": { "type": ["integer", "null"] },
+      "StandardUsePointTax": { "type": ["number", "null"] },
+      "StandardDiffTax": { "type": ["number", "null"] },
+      "ReducedUsePoint": { "type": ["number", "null"] },
+      "ReducedUsePointTax": { "type": ["number", "null"] },
+      "ReducedDiffYen": { "type": ["number", "null"] },
+      "ReducedDiffTax": { "type": ["number", "null"] },
+      "ReducedTaxRateFlg": { "type": ["integer", "null"] },
+      "StandardOrderYen": { "type": ["number", "null"] },
+      "StandardOrderTax": { "type": ["number", "null"] },
+      "ReducedOrderYen": { "type": ["number", "null"] },
+      "ReducedOrderTax": { "type": ["number", "null"] }
+    },
+    "required": [
+      "DataKbn", "UpdateKbn", "ShipmentKbn", "ShipmentNo",
+      "ShipmentLineSeq", "ItemCd", "SalesCommodityName", "ShipmentQty"
+    ]
+  }
 }
