@@ -4,11 +4,11 @@
 	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
-	<file:config name="File_Config" doc:name="File Config" doc:id="96d8e249-29f6-4a49-bdcd-fd45d4c1e589" />
-	<flow name="cc4dmeapiFlow" doc:id="9e15e3f6-eacd-45b7-b840-6e62d16f1556" >
-		<file:listener doc:name="On New or Updated File" doc:id="4d67df34-6a6a-464c-84f6-c75c78fd2541" config-ref="File_Config" directory="/tmp/data">
+	<file:config name="File_Config" doc:name="File Config" doc:id="8ccaf83a-3211-4891-bd00-ccbe3935fb16" />
+	<flow name="cc4dmeapiFlow" doc:id="cebf8f3b-2c03-49a3-a3ea-49f9e9a41976" >
+		<file:listener doc:name="On New or Updated File" doc:id="2a276403-aef5-4f05-aaa0-1e0fc0402055" config-ref="File_Config" directory="/Users/ykurozumi/test_data/input" moveToDirectory="/Users/ykurozumi/test_data/success">
 			<scheduling-strategy >
-				<fixed-frequency />
+				<fixed-frequency frequency="10" timeUnit="SECONDS"/>
 			</scheduling-strategy>
 		</file:listener>
 	</flow>
