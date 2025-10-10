@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	
+	<munit:config name="shipping-api-test-suite.xml" />
+	
+	<!-- ========================================== -->
+	<!-- 配送拠点振り分けサブフローのテストケース -->
+	<!-- ========================================== -->
+	
+	<!-- テストケース1: 特別処理 - SP荷札番号 -->
+	<munit:test name="distribution-center-routing-subflow-special-tag-sp-test" doc:id="test-sp-tag">
+		<munit:execution>
+			<set-payload value='{"postalCode": "1000001", "tagNumber": "SP12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('SPECIAL_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.special.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('10')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース2: 速達処理 - EX荷札番号 -->
+	<munit:test name="distribution-center-routing-subflow-express-tag-ex-test" doc:id="test-ex-tag">
+		<munit:execution>
+			<set-payload value='{"postalCode": "2000001", "tagNumber": "EX67890"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('EXPRESS_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.express.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('20')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース3: 冷凍処理 - FR荷札番号 -->
+	<munit:test name="distribution-center-routing-subflow-frozen-tag-fr-test" doc:id="test-fr-tag">
+		<munit:execution>
+			<set-payload value='{"postalCode": "3000001", "tagNumber": "FR11111"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('FROZEN_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.frozen.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('30')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース4: 危険物処理 - DG荷札番号 -->
+	<munit:test name="distribution-center-routing-subflow-dangerous-tag-dg-test" doc:id="test-dg-tag">
+		<munit:execution>
+			<set-payload value='{"postalCode": "4000001", "tagNumber": "DG22222"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('DANGEROUS_GOODS_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.dangerous.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('40')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース5: 北海道センター - 郵便番号01 -->
+	<munit:test name="distribution-center-routing-subflow-hokkaido-01-test" doc:id="test-hokkaido-01">
+		<munit:execution>
+			<set-payload value='{"postalCode": "0100001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('HOKKAIDO_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.hokkaido.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('01')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース6: 北海道センター - 郵便番号05 -->
+	<munit:test name="distribution-center-routing-subflow-hokkaido-05-test" doc:id="test-hokkaido-05">
+		<munit:execution>
+			<set-payload value='{"postalCode": "0500001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('HOKKAIDO_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.hokkaido.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('05')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース7: 関東センター - 郵便番号10 -->
+	<munit:test name="distribution-center-routing-subflow-kanto-10-test" doc:id="test-kanto-10">
+		<munit:execution>
+			<set-payload value='{"postalCode": "1000001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('KANTO_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.kanto.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('10')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース8: 関東センター - 郵便番号19 -->
+	<munit:test name="distribution-center-routing-subflow-kanto-19-test" doc:id="test-kanto-19">
+		<munit:execution>
+			<set-payload value='{"postalCode": "1900001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('KANTO_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.kanto.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('19')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース9: 中部センター - 郵便番号20 -->
+	<munit:test name="distribution-center-routing-subflow-chubu-20-test" doc:id="test-chubu-20">
+		<munit:execution>
+			<set-payload value='{"postalCode": "2000001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('CHUBU_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.chubu.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('20')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース10: 中部センター - 郵便番号29 -->
+	<munit:test name="distribution-center-routing-subflow-chubu-29-test" doc:id="test-chubu-29">
+		<munit:execution>
+			<set-payload value='{"postalCode": "2900001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('CHUBU_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.chubu.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('29')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース11: 関西センター - 郵便番号30 -->
+	<munit:test name="distribution-center-routing-subflow-kansai-30-test" doc:id="test-kansai-30">
+		<munit:execution>
+			<set-payload value='{"postalCode": "3000001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('KANSAI_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.kansai.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('30')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース12: 関西センター - 郵便番号39 -->
+	<munit:test name="distribution-center-routing-subflow-kansai-39-test" doc:id="test-kansai-39">
+		<munit:execution>
+			<set-payload value='{"postalCode": "3900001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('KANSAI_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.kansai.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('39')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース13: 中国センター - 郵便番号40 -->
+	<munit:test name="distribution-center-routing-subflow-chugoku-40-test" doc:id="test-chugoku-40">
+		<munit:execution>
+			<set-payload value='{"postalCode": "4000001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('CHUGOKU_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.chugoku.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('40')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース14: 中国センター - 郵便番号49 -->
+	<munit:test name="distribution-center-routing-subflow-chugoku-49-test" doc:id="test-chugoku-49">
+		<munit:execution>
+			<set-payload value='{"postalCode": "4900001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('CHUGOKU_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.chugoku.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('49')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース15: 四国センター - 郵便番号50 -->
+	<munit:test name="distribution-center-routing-subflow-shikoku-50-test" doc:id="test-shikoku-50">
+		<munit:execution>
+			<set-payload value='{"postalCode": "5000001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('SHIKOKU_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.shikoku.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('50')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース16: 四国センター - 郵便番号59 -->
+	<munit:test name="distribution-center-routing-subflow-shikoku-59-test" doc:id="test-shikoku-59">
+		<munit:execution>
+			<set-payload value='{"postalCode": "5900001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('SHIKOKU_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.shikoku.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('59')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース17: 九州センター - 郵便番号60 -->
+	<munit:test name="distribution-center-routing-subflow-kyushu-60-test" doc:id="test-kyushu-60">
+		<munit:execution>
+			<set-payload value='{"postalCode": "6000001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('KYUSHU_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.kyushu.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('60')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース18: 九州センター - 郵便番号89 -->
+	<munit:test name="distribution-center-routing-subflow-kyushu-89-test" doc:id="test-kyushu-89">
+		<munit:execution>
+			<set-payload value='{"postalCode": "8900001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('KYUSHU_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.kyushu.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('89')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース19: 沖縄センター - 郵便番号90 -->
+	<munit:test name="distribution-center-routing-subflow-okinawa-90-test" doc:id="test-okinawa-90">
+		<munit:execution>
+			<set-payload value='{"postalCode": "9000001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('OKINAWA_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.okinawa.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('90')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース20: 沖縄センター - 郵便番号99 -->
+	<munit:test name="distribution-center-routing-subflow-okinawa-99-test" doc:id="test-okinawa-99">
+		<munit:execution>
+			<set-payload value='{"postalCode": "9900001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('OKINAWA_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.okinawa.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('99')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース21: デフォルトセンター - 未定義郵便番号 -->
+	<munit:test name="distribution-center-routing-subflow-default-center-test" doc:id="test-default-center">
+		<munit:execution>
+			<set-payload value='{"postalCode": "0000001", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('DEFAULT_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.default.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('00')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース22: 郵便番号が短い場合 -->
+	<munit:test name="distribution-center-routing-subflow-short-postal-code-test" doc:id="test-short-postal-code">
+		<munit:execution>
+			<set-payload value='{"postalCode": "1", "tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('DEFAULT_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.default.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('')]" />
+		</munit:validation>
+	</munit:test>
+	
+	<!-- テストケース23: 郵便番号がnullの場合 -->
+	<munit:test name="distribution-center-routing-subflow-null-postal-code-test" doc:id="test-null-postal-code">
+		<munit:execution>
+			<set-payload value='{"tagNumber": "NM12345"}' />
+			<flow-ref name="distribution-center-routing-subflow" />
+		</munit:execution>
+		<munit:validation>
+			<munit-tools:assert-that expression="#[vars.distributionCenter]" is="#[MunitTools::equalTo('DEFAULT_CENTER')]" />
+			<munit-tools:assert-that expression="#[vars.targetApiEndpoint]" is="#[MunitTools::equalTo('https://api.default.distribution.com/shipping')]" />
+			<munit-tools:assert-that expression="#[vars.postalCodeArea]" is="#[MunitTools::equalTo('')]" />
+		</munit:validation>
+	</munit:test>
+
+</mule>
