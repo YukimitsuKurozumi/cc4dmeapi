@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="IFIDC0006_csv" format="csv">
+      <types:shape format="weave" example="test_data/IFIDC0006_出荷指示情報_荷札判定前_20251010_141200.csv"><![CDATA[%dw 2.0
+
+type IFIDC0006_csv = Array<{|  DataKbn: String,   UpdateKbn: String,   ShipmentKbn: String,   ShopOrderDate: String,   DeliveryScheDate: String,   DlvCorpCd: String,   DlvBaseKbn: String,   ShopCd: String,   ShipmentNo: String,   ShipmentLineSeq: String,   ShipmentLineNo: String,   SetCommodityKbn: String,   ItemCd: String,   SalesCommodityName: String,   ShipmentQty: String,   SalesPrice: String,   OrderCommodityYen: String,   DiscountYen: String,   OrderCommodityTax: String,   WrappingServiceName: String,   WrappingFee: String,   WrappingFeeTax: String,   SetItemCd: String,   SetSalesCommodityName: String,   SetShipmentQty: String,   SetSalesPrice: String,   SetOrderCommodityYen: String,   SetDiscountYen: String,   SetOrderCommodityTax: String,   ArrivalNo: String,   ArrivalLineNo: String,   Lot1: String,   Lot2: String,   Charge: String,   ChargeTax: String,   Shipping: String,   ShippingTax: String,   AdvancedYen: String,   StaffSalesFlg: String,   ShipmentRequestDate: String,   OrderReceiptDate: String,   CreateBy: String,   PayMethodKbn: String,   CreditCardCorpCd: String,   DLVOutForGIFTKbn: String,   CustNo: String,   ZipNo: String,   Adr1: String,   Adr2: String,   Adr3: String,   Adr4: String,   Adr5: String,   Adr6: String,   TelNo: String,   CustKanjiName: String,   CustKanaName: String,   ClientZipNo: String,   ClientAdr1: String,   ClientAdr2: String,   ClientAdr3: String,   ClientAdr4: String,   ClientAdr5: String,   ClientAdr6: String,   ClientTelNo: String,   ClientKanjiName: String,   ClientKanaName: String,   ClientCorpName: String,   DestZipNo: String,   DestAdr1: String,   DestAdr2: String,   DestAdr3: String,   DestAdr4: String,   DestAdr5: String,   DestAdr6: String,   DestTelNo: String,   DestKanjiName: String,   DestKanaName: String,   DestCorpName: String,   DlvAppointedDate: String,   DlvAppointedTimePerDlvCorpKbn: String,   DlvAppointedTimePerDlvCorpName: String,   DlvCorpDetailKbn: String,   ArrivedShopNo1: String,   ArrivedShopNo2: String,   LiquidationShopNo1: String,   LiquidationShopNo2: String,   DlvInstructionComment: String,   SentenceKbn1: String,   SentenceCd1: String,   SentenceKbn2: String,   SentenceCd2: String,   CustServiceRankName: String,   UseEnablePoint: String,   UsePoint: String,   OccurSchedulePoint: String,   UseSchedulePoint: String,   CampainPoint: String,   TotalPoint: String,   LapseNextMonth: String,   LapseNextMonthPoint: String,   LapseNextMonth2: String,   LapseNextMonthPoint2: String,   NextDlvDate: String,   NextDlvItemCd1: String,   NextDlvSalesCommodityName1: String,   NextDlvShipmentQty1: String,   NextDlvCommoditySalesMethodName1: String,   NextDlvOrderCommodityYen1: String,   NextDlvItemCd2: String,   NextDlvSalesCommodityName2: String,   NextDlvShipmentQty2: String,   NextDlvCommoditySalesMethodName2: String,   NextDlvOrderCommodityYen2: String,   NextDlvItemCd3: String,   NextDlvSalesCommodityName3: String,   NextDlvShipmentQty3: String,   NextDlvCommoditySalesMethodName3: String,   NextDlvOrderCommodityYen3: String,   NextDlvItemCd4: String,   NextDlvSalesCommodityName4: String,   NextDlvShipmentQty4: String,   NextDlvCommoditySalesMethodName4: String,   NextDlvOrderCommodityYen4: String,   NextDlvItemCd5: String,   NextDlvSalesCommodityName5: String,   NextDlvShipmentQty5: String,   NextDlvCommoditySalesMethodName5: String,   NextDlvOrderCommodityYen5: String,   NextDlvItemCd6: String,   NextDlvSalesCommodityName6: String,   NextDlvShipmentQty6: String,   NextDlvCommoditySalesMethodName6: String,   NextDlvOrderCommodityYen6: String,   NextDlvItemCd7: String,   NextDlvSalesCommodityName7: String,   NextDlvShipmentQty7: String,   NextDlvCommoditySalesMethodName7: String,   NextDlvOrderCommodityYen7: String,   NextDlvItemCd8: String,   NextDlvSalesCommodityName8: String,   NextDlvShipmentQty8: String,   NextDlvCommoditySalesMethodName8: String,   NextDlvOrderCommodityYen8: String,   NextDlvItemCd9: String,   NextDlvSalesCommodityName9: String,   NextDlvShipmentQty9: String,   NextDlvCommoditySalesMethodName9: String,   NextDlvOrderCommodityYen9: String,   NextDlvItemCd10: String,   NextDlvSalesCommodityName10: String,   NextDlvShipmentQty10: String,   NextDlvCommoditySalesMethodName10: String,   NextDlvOrderCommodityYen10: String,   SentenceKbn3: String,   SentenceCd3: String,   SentenceKbn4: String,   SentenceCd4: String,   DataCreateDate: String,   ExtKbnName: String,   InspectMemo: String,   OCRCd: String,   EAN128Cd: String,   PayDeadlineDate: String,   OrderPriceCutYen: String,   ReportScheduleDate: String,   PointLapseScheduleDate: String,   PointLapseSchedulePoint: String,   RankEndDate: String,   SaleYenYear: String,   PointOccurComment: String,   DestJISCd: String,   NextDlvCharge: String,   PurchaseListKbn: String,   RankJudgeTotalSalesYen: String,   PromoCd: String,   PromoName: String,   TaxRateKbn: String,   TaxTaxKbn: String,   DlvCorpAppointedKbn: String,   YobiKbn: String,   RepeatCustFlg: String,   StandardUsePointTax: String,   StandardDiffTax: String,   ReducedUsePoint: String,   ReducedUsePointTax: String,   ReducedDiffYen: String,   ReducedDiffTax: String,   ReducedTaxRateFlg: String,   StandardOrderYen: String,   StandardOrderTax: String,   ReducedOrderYen: String,   ReducedOrderTax: String|}> {"header": "true",
+"headerLineNumber": "0",
+"isQuotedString": "false"}
+
+]]></types:shape>
+      <types:properties>
+        <types:property name="headerLineNumber" value="0"/>
+        <types:property name="header" value="true"/>
+        <types:property name="isQuotedString" value="false"/>
+      </types:properties>
+    </types:type>
+    <types:type name="ShippingInstructions_json_schema" format="json">
+      <types:shape format="json-schema" location="shipment-schema.json"/>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#78d34b4d-f08a-4f52-a26b-da69b4dbd245">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="IFIDC0006_csv"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="ShippingInstructions_json_schema"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

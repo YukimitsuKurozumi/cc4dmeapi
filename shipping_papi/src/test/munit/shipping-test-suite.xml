@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="shipping-test-suite.xml" />
+	<munit:test name="shipping-test-suite-post:\shipping-instructions:application\json:shipping-configTest" doc:id="ed4850c0-7b5f-426f-aaff-31cf13e06032" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to post:\shipping-instructions:application\json:shipping-config" doc:id="cf15f5f8-b2c8-40b2-ba61-80b5f7d257ed" name="post:\shipping-instructions:application\json:shipping-config"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert-equals doc:name="Assert equals" doc:id="58ded9ad-a4fa-463b-a088-d26877426781" actual="#[true]" expected="#[true]"/>
+		</munit:validation>
+	</munit:test>
+
+</mule>
