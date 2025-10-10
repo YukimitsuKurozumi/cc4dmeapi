@@ -1,0 +1,13 @@
+{
+  "main": "shipping.yaml",
+  "name": "Shipping",
+  "classifier": "oas",
+  "organizationId": "5733abe5-08b6-4bb3-a0ae-fd462d88c02a",
+  "descriptorVersion": "1.0.0",
+  "tags": [],
+  "groupId": "5733abe5-08b6-4bb3-a0ae-fd462d88c02a",
+  "assetId": "shipping",
+  "version": "1.1.0",
+  "apiVersion": "1.0.0",
+  "categories": []
+}
