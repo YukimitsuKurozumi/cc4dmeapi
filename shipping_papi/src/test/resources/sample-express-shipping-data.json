@@ -1,0 +1,28 @@
+{
+  "companyCode": "B001",
+  "warehouseCode": "WH02",
+  "shippingType": "EXPRESS",
+  "urgencyFlag": true,
+  "destinationRegion": "OSAKA",
+  "orderNumber": "ORD-2024-002",
+  "customerInfo": {
+    "customerId": "CUST-002",
+    "customerName": "株式会社緊急配送",
+    "address": {
+      "prefecture": "大阪府",
+      "city": "大阪市",
+      "street": "梅田1-1-1"
+    }
+  },
+  "items": [
+    {
+      "itemCode": "ITEM-003",
+      "itemName": "緊急商品",
+      "quantity": 1,
+      "unitPrice": 5000
+    }
+  ],
+  "shippingDate": "2024-10-11",
+  "deliveryDate": "2024-10-12",
+  "specialInstructions": "緊急配送のため即日処理が必要"
+}

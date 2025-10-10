@@ -1,0 +1,33 @@
+{
+  "companyCode": "A001",
+  "warehouseCode": "WH01",
+  "shippingType": "STANDARD",
+  "urgencyFlag": false,
+  "destinationRegion": "TOKYO",
+  "orderNumber": "ORD-2024-001",
+  "customerInfo": {
+    "customerId": "CUST-001",
+    "customerName": "株式会社サンプル",
+    "address": {
+      "prefecture": "東京都",
+      "city": "渋谷区",
+      "street": "渋谷1-1-1"
+    }
+  },
+  "items": [
+    {
+      "itemCode": "ITEM-001",
+      "itemName": "商品A",
+      "quantity": 10,
+      "unitPrice": 1000
+    },
+    {
+      "itemCode": "ITEM-002",
+      "itemName": "商品B",
+      "quantity": 5,
+      "unitPrice": 2000
+    }
+  ],
+  "shippingDate": "2024-10-15",
+  "deliveryDate": "2024-10-17"
+}
