@@ -16,7 +16,7 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 			config-ref="File_Config" 
 			directory="/Users/ykurozumi/test_data/input" 
 			moveToDirectory="/Users/ykurozumi/test_data/processed"
-			matcher="csvFileMatcher">
+			matcher="csvFileMatcher" renameTo='#[now() ++ ".csv"]'>
 			<scheduling-strategy >
 				<fixed-frequency frequency="10" timeUnit="SECONDS"/>
 			</scheduling-strategy>
@@ -24,7 +24,6 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 
 		<logger level="INFO" doc:name="Log File Processing Start" doc:id="log-start" 
 			message="Processing CSV file: #[attributes.fileName]"/>
-		
 		<ee:transform doc:name="Transform Message" doc:id="78d34b4d-f08a-4f52-a26b-da69b4dbd245" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
@@ -208,7 +207,7 @@ payload map ( payload01 , indexOfPayload01 ) -> {
 	SetOrderCommodityYen: payload01.SetOrderCommodityYen,
 	CampainPoint: payload01.CampainPoint,
 	ShipmentKbn: payload01.ShipmentKbn as Number,
-	Charge: payload01.Charge as Number,
+	Charge: payload01.Charge default 0 as Number,
 	LapseNextMonthPoint: payload01.LapseNextMonthPoint,
 	DlvCorpCd: payload01.DlvCorpCd,
 	StandardUsePointTax: payload01.StandardUsePointTax,
