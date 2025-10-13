@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+	http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
     <http:listener-config name="wmssapi-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
-    <apikit:config name="wmssapi-config" api="resource::5733abe5-08b6-4bb3-a0ae-fd462d88c02a:wmssapi:1.0.0:oas:zip:wmssapi.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <apikit:config name="wmssapi-config" api="resource::5733abe5-08b6-4bb3-a0ae-fd462d88c02a:wmssapi:1.1.0:oas:zip:wmssapi.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
     <flow name="wmssapi-main">
         <http:listener config-ref="wmssapi-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -127,9 +129,70 @@ output application/json
         <ee:transform doc:name="Transform Message">
             <ee:variables>
                 <ee:set-variable variableName="shipmentNo">attributes.uriParams.'shipmentNo'</ee:set-variable>
+                <ee:set-variable variableName="inputData">payload</ee:set-variable>
             </ee:variables>
         </ee:transform>
         <logger level="INFO" message="put:\shipments\(shipmentNo):application\json:wmssapi-config" />
+        <ee:transform doc:name="Update Shipment Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "shipmentNo": vars.shipmentNo,
+  "customerCode": vars.inputData.customerCode default "CUST001",
+  "customerName": vars.inputData.customerName default "Updated Customer",
+  "shipmentDate": vars.inputData.shipmentDate default (now() as String {format: "yyyy-MM-dd"}),
+  "status": vars.inputData.status default "UPDATED",
+  "items": vars.inputData.items default [
+    {
+      "itemCode": "ITEM001",
+      "itemName": "Updated Item",
+      "quantity": 1,
+      "unitPrice": 0.00,
+      "totalPrice": 0.00,
+      "weight": 0.0,
+      "dimensions": {
+        "length": 0.0,
+        "width": 0.0,
+        "height": 0.0
+      }
+    }
+  ],
+  "totalAmount": vars.inputData.totalAmount default 0.00,
+  "totalWeight": vars.inputData.totalWeight default 0.0,
+  "warehouse": vars.inputData.warehouse default {
+    "warehouseCode": "WH001",
+    "warehouseName": "Updated Warehouse",
+    "address": "Updated Address",
+    "contactPerson": "Updated Manager",
+    "contactPhone": "+1-555-0000"
+  },
+  "carrier": vars.inputData.carrier default {
+    "carrierCode": "CAR001",
+    "carrierName": "Updated Delivery",
+    "trackingNumber": "TRK" ++ (randomInt(1000000000) + 1000000000),
+    "estimatedDelivery": (now() + |P3D|) as String {format: "yyyy-MM-dd"}
+  },
+  "shippingAddress": vars.inputData.shippingAddress default {
+    "street": "Updated Street",
+    "city": "Updated City",
+    "state": "US",
+    "zipCode": "00000",
+    "country": "Updated Country"
+  },
+  "billingAddress": vars.inputData.billingAddress default vars.inputData.shippingAddress default {
+    "street": "Updated Street",
+    "city": "Updated City",
+    "state": "US",
+    "zipCode": "00000",
+    "country": "Updated Country"
+  },
+  "createdAt": (now() - |P1D|) as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+  "updatedAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
     </flow>
     <flow name="delete:\shipments\(shipmentNo):wmssapi-config">
         <ee:transform doc:name="Transform Message">
@@ -138,9 +201,63 @@ output application/json
             </ee:variables>
         </ee:transform>
         <logger level="INFO" message="delete:\shipments\(shipmentNo):wmssapi-config" />
+        <ee:transform doc:name="Delete Confirmation Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "message": "Shipment " ++ (vars.shipmentNo default "unknown") ++ " has been successfully deleted",
+  "shipmentNo": vars.shipmentNo default "unknown",
+  "deletedAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+  "status": "DELETED"
+}]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="httpStatus">200</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
     </flow>
     <flow name="get:\shipments:wmssapi-config">
         <logger level="INFO" message="get:\shipments:wmssapi-config" />
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+[
+  {
+    "shipmentNo": "SH001",
+    "customerCode": "CUST001",
+    "customerName": "Sample Customer",
+    "shipmentDate": now() as String {format: "yyyy-MM-dd"},
+    "status": "PENDING",
+    "items": [
+      {
+        "itemCode": "ITEM001",
+        "itemName": "Sample Item",
+        "quantity": 10,
+        "unitPrice": 100.00,
+        "totalPrice": 1000.00
+      }
+    ],
+    "totalAmount": 1000.00,
+    "warehouse": {
+      "warehouseCode": "WH001",
+      "warehouseName": "Main Warehouse",
+      "address": "123 Main St, City, Country"
+    },
+    "carrier": {
+      "carrierCode": "CAR001",
+      "carrierName": "Express Delivery",
+      "trackingNumber": "TRK123456789"
+    },
+    "createdAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+    "updatedAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+  }
+]]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
     </flow>
     <flow name="get:\shipments\(shipmentNo):wmssapi-config">
         <ee:transform doc:name="Transform Message">
@@ -149,8 +266,353 @@ output application/json
             </ee:variables>
         </ee:transform>
         <logger level="INFO" message="get:\shipments\(shipmentNo):wmssapi-config" />
+        <ee:transform doc:name="Transform Message">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "shipmentNo": vars.shipmentNo,
+  "customerCode": "CUST001",
+  "customerName": "Sample Customer",
+  "shipmentDate": now() as String {format: "yyyy-MM-dd"},
+  "status": "IN_TRANSIT",
+  "items": [
+    {
+      "itemCode": "ITEM001",
+      "itemName": "Sample Item",
+      "quantity": 10,
+      "unitPrice": 100.00,
+      "totalPrice": 1000.00,
+      "weight": 5.5,
+      "dimensions": {
+        "length": 30.0,
+        "width": 20.0,
+        "height": 15.0
+      }
+    }
+  ],
+  "totalAmount": 1000.00,
+  "totalWeight": 5.5,
+  "warehouse": {
+    "warehouseCode": "WH001",
+    "warehouseName": "Main Warehouse",
+    "address": "123 Main St, City, Country",
+    "contactPerson": "John Doe",
+    "contactPhone": "+1-555-0123"
+  },
+  "carrier": {
+    "carrierCode": "CAR001",
+    "carrierName": "Express Delivery",
+    "trackingNumber": "TRK123456789",
+    "estimatedDelivery": (now() + |P3D|) as String {format: "yyyy-MM-dd"}
+  },
+  "shippingAddress": {
+    "street": "456 Customer Ave",
+    "city": "Customer City",
+    "state": "CS",
+    "zipCode": "12345",
+    "country": "Country"
+  },
+  "billingAddress": {
+    "street": "456 Customer Ave",
+    "city": "Customer City", 
+    "state": "CS",
+    "zipCode": "12345",
+    "country": "Country"
+  },
+  "createdAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+  "updatedAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
     </flow>
     <flow name="post:\shipments:application\json:wmssapi-config">
         <logger level="INFO" message="post:\shipments:application\json:wmssapi-config" />
+        <ee:transform doc:name="Set Input Data">
+            <ee:variables>
+                <ee:set-variable variableName="inputData">payload</ee:set-variable>
+                <ee:set-variable variableName="newShipmentNo">"SH" ++ (randomInt(1000000) + 1000000)</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <flow-ref doc:name="Call Mapping Subflow" name="mapping-detailed-specification-subflow"/>
+        <ee:transform doc:name="Convert to CSV Format">
+            <ee:variables>
+                <ee:set-variable variableName="csvData"><![CDATA[%dw 2.0
+output text/csv header=true
+---
+vars.result]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+        <file:write doc:name="Write CSV File" path="/tmp/result.csv" mode="OVERWRITE">
+            <file:content>#[vars.csvData]</file:content>
+        </file:write>
+        <logger level="INFO" doc:name="Log CSV Output" message="CSV file written to /tmp/result.csv"/>
+        <ee:transform doc:name="Create Shipment Response">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "shipmentNo": vars.newShipmentNo,
+  "customerCode": vars.inputData.customerCode default "CUST001",
+  "customerName": vars.inputData.customerName default "New Customer",
+  "shipmentDate": vars.inputData.shipmentDate default (now() as String {format: "yyyy-MM-dd"}),
+  "status": "CREATED",
+  "mappedData": vars.result,
+  "createdAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"},
+  "updatedAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}
+}]]></ee:set-payload>
+            </ee:message>
+            <ee:variables>
+                <ee:set-variable variableName="httpStatus">201</ee:set-variable>
+            </ee:variables>
+        </ee:transform>
     </flow>
+    
+    <!-- マッピング詳細仕様に基づくデータ変換サブフロー -->
+    <sub-flow name="mapping-detailed-specification-subflow" doc:name="Mapping Detailed Specification Subflow">
+        <ee:transform doc:name="Data Mapping Transform">
+            <ee:variables>
+                <ee:set-variable variableName="result"><![CDATA[%dw 2.0
+output application/json
+---
+{
+  // 内部処理ID1 - 基本項目（1-30）
+  "data_kbn": "20", // データ区分：20:出荷指示
+  "update_kbn": "1", // 更新区分：1:登録
+  "channel": "1", // 出荷種別：1:通販
+  "bin_cd": payload.bin_cd default "", // 配送会社コード
+  "syk_fm_cd": payload.syk_fm_cd default "", // 出荷元コード
+  "cstmr_no": payload.cstmr_no default "", // 出荷先コード
+  "dnp_no": "1" ++ (payload.dnp_no default ""), // 伝票番号（先頭に1を付与）
+  "dnp_msi_no": payload.dnp_msi_no default "01", // 行番号（01～99）
+  "msi_gyo_no": payload.msi_gyo_no default "", // 明細行番号
+  "set_sku_kbn": payload.set_sku_kbn default "0", // セット商品区分：0:単品、1:セット商品
+  "sku_cd": payload.sku_cd default "", // 商品コード
+  "sales_sku_nm": payload.sales_sku_nm default "", // 商品名
+  "ttl_qty": payload.ttl_qty default 0, // 予定数量
+  "nohin_price": payload.nohin_price default 0, // 納品単価
+  "nohin_amnt": payload.nohin_amnt default 0, // 納品金額
+  "stage_dwn": payload.stage_dwn default 0, // ステージ割引
+  "msi_tax": payload.msi_tax default 0, // 明細消費税額
+  "wrp_srv_nm": payload.wrp_srv_nm default "", // ラッピングサービス名
+  "wrp_amnt": payload.wrp_amnt default 0, // ラッピング料
+  "wrp_tax": payload.wrp_tax default 0, // ラッピング料消費税
+  "set_oya_sku_cd": payload.set_oya_sku_cd default "", // セット親商品コード
+  "set_oya_sku_nm": payload.set_oya_sku_nm default "", // セット親商品名
+  "set_price": payload.set_price default 0, // セット納品単価
+  "set_oya_amnt": payload.set_oya_amnt default 0, // セット親金額
+  "set_stage_dwn": payload.set_stage_dwn default 0, // セットステージ割引
+  "set_msi_tax": payload.set_msi_tax default 0, // セット明細消費税額
+  "pay_amnt": payload.pay_amnt default 0, // 合計金額
+  "tax": payload.tax default 0, // 合計金額消費税
+  "souryo": payload.souryo default 0, // 送料
+  "souryo_tax": payload.souryo_tax default 0, // 送料消費税
+  
+  // 基本項目（31-60）
+  "sales_dpt": payload.sales_dpt default 0, // 前受金
+  "shn_fg": payload.shn_fg default "", // 社販フラグ
+  "nfd_no": payload.nfd_no default "", // 荷札番号
+  "syk_yti_yd": payload.syk_yti_yd default "" as String, // 出荷予定日（YYYY/MM/DD形式）
+  "jch_yd": payload.jch_yd default "" as String, // 受注日（YYYY/MM/DD形式）
+  "jch_usr": payload.jch_usr default "", // 受注担当者
+  "pay_kbn": payload.pay_kbn default "", // 支払区分
+  "credit_cd": payload.credit_cd default "", // カード会社コード
+  "gift_fg": payload.gift_fg default "", // ギフトフラグ
+  "ord_post": payload.ord_post default "", // 注文者郵便番号
+  "ord_addr1": payload.ord_addr1 default "", // 注文者住所１
+  "ord_addr2": payload.ord_addr2 default "", // 注文者住所２
+  "ord_addr3": payload.ord_addr3 default "", // 注文者住所３
+  "ord_addr4": payload.ord_addr4 default "", // 注文者住所４
+  "ord_addr5": payload.ord_addr5 default "", // 注文者住所５
+  "ord_addr6": payload.ord_addr6 default "", // 注文者住所６
+  "ord_tel": payload.ord_tel default "", // 注文者電話番号
+  "ord_nm": payload.ord_nm default "", // 注文者名
+  "ord_kana": payload.ord_kana default "", // 注文者カナ名
+  "req_post": payload.req_post default "", // 依頼主郵便番号
+  "req_addr1": payload.req_addr1 default "", // 依頼主住所1
+  "req_addr2": payload.req_addr2 default "", // 依頼主住所2
+  "req_addr3": payload.req_addr3 default "", // 依頼主住所3
+  "req_addr4": payload.req_addr4 default "", // 依頼主住所4
+  "req_addr5": payload.req_addr5 default "", // 依頼主住所5
+  "req_addr6": payload.req_addr6 default "", // 依頼主住所6
+  "req_tel": payload.req_tel default "", // 依頼主電話番号
+  "req_nm": payload.req_nm default "", // 依頼主名
+  "req_kana": payload.req_kana default "", // 依頼主カナ名
+  "req_com": payload.req_com default "", // 依頼主会社名
+  
+  // 配送先情報（61-90）
+  "dest_postno": payload.dest_postno default "", // 届け先郵便番号
+  "dest_adrs1": payload.dest_adrs1 default "", // 届け先住所1
+  "dest_adrs2": payload.dest_adrs2 default "", // 届け先住所2
+  "dest_adrs3": payload.dest_adrs3 default "", // 届け先住所3
+  "dest_adrs4": payload.dest_adrs4 default "", // 届け先住所4
+  "dest_adrs5": payload.dest_adrs5 default "", // 届け先住所5
+  "dest_adrs6": payload.dest_adrs6 default "", // 届け先住所6
+  "dest_tel": payload.dest_tel default "", // 届け先電話番号
+  "dest_nm": payload.dest_nm default "", // 届け先名
+  "dest_kana": payload.dest_kana default "", // 届け先カナ名
+  "dest_com": payload.dest_com default "", // 届け先会社名
+  "apt_yd": payload.apt_yd default "", // 指定日
+  "apt_tm_kbn": payload.apt_tm_kbn default "", // 指定時間帯区分
+  "apt_tm_nm": payload.apt_tm_nm default "", // 指定時間帯
+  "bin_type": payload.bin_type default "", // 便種
+  "arvl_cd": payload.arvl_cd default "", // 着店（仕分）コード
+  "arvl_brn": payload.arvl_brn default "", // 着店（仕分）枝番
+  "accnt_cd": payload.accnt_cd default "", // 精算店コード
+  "accnt_brn": payload.accnt_brn default "", // 精算店枝番
+  "lbl_rem": payload.lbl_rem default "", // 送り状備考
+  "sort_no": "1", // ソート順（固定値）
+  "info_kbn": payload.info_kbn default "", // お知らせ区分
+  "info_cd": payload.info_cd default "", // お知らせコード
+  "teiki_info_kbn": payload.teiki_info_kbn default "", // 定期購入お知らせ区分
+  "teiki_info_cd": payload.teiki_info_cd default "", // 定期購入お知らせコード
+  "stage": payload.stage default "", // ステージ
+  "syk_bf_pnt": payload.syk_bf_pnt default 0, // 出荷前ポイント
+  "use_pnt": payload.use_pnt default 0, // 利用ポイント
+  "hatsu_pnt": payload.hatsu_pnt default 0, // 発生予定ポイント
+  "nxt_use__pnt": payload.nxt_use__pnt default 0, // 翌月以降利用予定ポイント
+  
+  // ポイント・次回お届け情報（91-120）
+  "sp_pnt": payload.sp_pnt default 0, // 当月特別ポイント
+  "amnt_pnt": payload.amnt_pnt default 0, // 合計ポイント
+  "nxt_mon": payload.nxt_mon default "", // 翌月
+  "nxt_lost_pnt": payload.nxt_lost_pnt default 0, // 翌月失効予定ポイント
+  "nxt2_mon": payload.nxt2_mon default "", // 翌々月
+  "nxt2_lost_pnt": payload.nxt2_lost_pnt default 0, // 翌々月失効予定ポイント
+  "nxt_yd": payload.nxt_yd default "", // 次回お届け日
+  "nxt_sku_cd1": payload.nxt_sku_cd1 default "", // 次回お届け予定商品コード①
+  "nxt_sku_nm1": payload.nxt_sku_nm1 default "", // 次回お届け商品名①
+  "nxt_qty1": payload.nxt_qty1 default 0, // 次回お届け予定数量①
+  "nxt_buy_hou1": payload.nxt_buy_hou1 default "", // 次回お届け購入方法①
+  "nxt_pay1": payload.nxt_pay1 default 0, // 定期次回お届け金額1
+  "nxt_sku_cd2": payload.nxt_sku_cd2 default "", // 次回お届け予定商品コード②
+  "nxt_sku_nm2": payload.nxt_sku_nm2 default "", // 次回お届け商品名②
+  "nxt_qty2": payload.nxt_qty2 default 0, // 次回お届け予定数量②
+  "nxt_buy_hou2": payload.nxt_buy_hou2 default "", // 次回お届け購入方法②
+  "nxt_pay2": payload.nxt_pay2 default 0, // 定期次回お届け金額2
+  "nxt_sku_cd3": payload.nxt_sku_cd3 default "", // 次回お届け予定商品コード③
+  "nxt_sku_nm3": payload.nxt_sku_nm3 default "", // 次回お届け商品名③
+  "nxt_qty3": payload.nxt_qty3 default 0, // 次回お届け予定数量③
+  "nxt_buy_hou3": payload.nxt_buy_hou3 default "", // 次回お届け購入方法③
+  "nxt_pay3": payload.nxt_pay3 default 0, // 定期次回お届け金額3
+  "nxt_sku_cd4": payload.nxt_sku_cd4 default "", // 次回お届け予定商品コード④
+  "nxt_sku_nm4": payload.nxt_sku_nm4 default "", // 次回お届け商品名④
+  "nxt_qty4": payload.nxt_qty4 default 0, // 次回お届け予定数量④
+  "nxt_buy_hou4": payload.nxt_buy_hou4 default "", // 次回お届け購入方法④
+  "nxt_pay4": payload.nxt_pay4 default 0, // 定期次回お届け金額4
+  "nxt_sku_cd5": payload.nxt_sku_cd5 default "", // 次回お届け予定商品コード⑤
+  "nxt_sku_nm5": payload.nxt_sku_nm5 default "", // 次回お届け商品名⑤
+  "nxt_qty5": payload.nxt_qty5 default 0, // 次回お届け予定数量⑤
+  "nxt_buy_hou5": payload.nxt_buy_hou5 default "", // 次回お届け購入方法⑤
+  "nxt_pay5": payload.nxt_pay5 default 0, // 定期次回お届け金額5
+  
+  // 次回お届け情報続き（121-150）
+  "nxt_sku_cd6": payload.nxt_sku_cd6 default "", // 次回お届け予定商品コード⑥
+  "nxt_sku_nm6": payload.nxt_sku_nm6 default "", // 次回お届け商品名⑥
+  "nxt_qty6": payload.nxt_qty6 default 0, // 次回お届け予定数量⑥
+  "nxt_buy_hou6": payload.nxt_buy_hou6 default "", // 次回お届け購入方法⑥
+  "nxt_pay6": payload.nxt_pay6 default 0, // 定期次回お届け金額６
+  "nxt_sku_cd7": payload.nxt_sku_cd7 default "", // 次回お届け予定商品コード⑦
+  "nxt_sku_nm7": payload.nxt_sku_nm7 default "", // 次回お届け商品名⑦
+  "nxt_qty7": payload.nxt_qty7 default 0, // 次回お届け予定数量⑦
+  "nxt_buy_hou7": payload.nxt_buy_hou7 default "", // 次回お届け購入方法⑦
+  "nxt_pay7": payload.nxt_pay7 default 0, // 定期次回お届け金額７
+  "nxt_sku_cd8": payload.nxt_sku_cd8 default "", // 次回お届け予定商品コード⑧
+  "nxt_sku_nm8": payload.nxt_sku_nm8 default "", // 次回お届け商品名⑧
+  "nxt_qty8": payload.nxt_qty8 default 0, // 次回お届け予定数量⑧
+  "nxt_buy_hou8": payload.nxt_buy_hou8 default "", // 次回お届け購入方法⑧
+  "nxt_pay8": payload.nxt_pay8 default 0, // 定期次回お届け金額８
+  "nxt_sku_cd9": payload.nxt_sku_cd9 default "", // 次回お届け予定商品コード⑨
+  "nxt_sku_nm9": payload.nxt_sku_nm9 default "", // 次回お届け商品名⑨
+  "nxt_qty9": payload.nxt_qty9 default 0, // 次回お届け予定数量⑨
+  "nxt_buy_hou9": payload.nxt_buy_hou9 default "", // 次回お届け購入方法⑨
+  "nxt_pay9": payload.nxt_pay9 default 0, // 定期次回お届け金額9
+  "nxt_sku_cd10": payload.nxt_sku_cd10 default "", // 次回お届け予定商品コード⑩
+  "nxt_sku_nm10": payload.nxt_sku_nm10 default "", // 次回お届け商品名⑩
+  "nxt_qty10": payload.nxt_qty10 default 0, // 次回お届け予定数量⑩
+  "nxt_buy_hou10": payload.nxt_buy_hou10 default "", // 次回お届け購入方法⑩
+  "nxt_pay10": payload.nxt_pay10 default 0, // 定期次回お届け金額１０
+  "msg_ttl_kbn": payload.msg_ttl_kbn default "", // メッセージタイトル区分
+  "msg_ttl_cd": payload.msg_ttl_cd default "", // メッセージタイトルコード
+  "msg_kbn": payload.msg_kbn default "", // メッセージ区分
+  "msg_cd": payload.msg_cd default "", // メッセージコード
+  "deal_dt": payload.deal_dt default "" as String, // 取引日時（YYYY/MM/DD HH:MM:SS形式）
+  "smpl_kbn": payload.smpl_kbn default "", // 抜き取り区分
+  "smpl_memo": payload.smpl_memo default "", // 抜き取り指示メモ
+  "ocr_dat": payload.ocr_dat default "", // 振込用紙OCR部
+  "cvs_cd": payload.cvs_cd default "", // 振込用紙バーコード(コンビニ)
+  "pay_dt": payload.pay_dt default "", // 支払期限
+  
+  // 追加項目（151-180）
+  "sagaku": payload.sagaku default 0, // 差額調整
+  "prsnt_nm": payload.prsnt_nm default "", // 社長氏名
+  "arvl_yti_yd": payload.arvl_yti_yd default "" as String, // 到着予定日（YYYY/MM/DD形式）
+  "pnt_lost_yd": payload.pnt_lost_yd default "" as String, // ポイント最短失効日（YYYY/MM/DD形式）
+  "lost_pnt": payload.lost_pnt default 0, // ポイント最短失効ポイント
+  "stg_dwn_yd": payload.stg_dwn_yd default "" as String, // ステージダウン日（YYYY/MM/DD形式）
+  "nen_buy_amnt": payload.nen_buy_amnt default 0, // 年間購入金額
+  "anv_pnt_dat": payload.anv_pnt_dat default "", // アニバーサリーポイント発生内容
+  "ymt_cstmr_cd": payload.ymt_cstmr_cd default "", // 顧客コード(ヤマト)
+  "sgy_cstmr_cd": payload.sgy_cstmr_cd default "", // 顧客コード親番(佐川)
+  "sgy_cstmr_brn": payload.sgy_cstmr_brn default "", // 顧客コード枝番(佐川)
+  "sgy_cstmr_cdt": payload.sgy_cstmr_cdt default "", // 顧客コードC/D(佐川)
+  "area_jis_cd": payload.area_jis_cd default "", // 着JISコード
+  "nxt_pay_amnt": payload.nxt_pay_amnt default 0, // 定期次回お届け合計金額
+  "sku_shu": payload.sku_shu default "", // 商品種別
+  "nhn_syu_kbn": payload.nhn_syu_kbn default "", // 納品書種別区分
+  "med_flg": payload.med_flg default "", // 医薬品フラグ
+  "RankJudgeTotalSalesYen": payload.RankJudgeTotalSalesYen default 0, // ランク判定用累計売上金額
+  "PromoCd": payload.PromoCd default "", // プロモーションコード
+  "PromoName": payload.PromoName default "", // プロモーション名
+  "TaxRateKbn": payload.TaxRateKbn default "", // 消費税率区分
+  "TaxTaxKbn": payload.TaxTaxKbn default "", // 消費税課税区分
+  "pay_name": payload.pay_name default "", // 支払方法名称
+  "buy_store": payload.buy_store default "", // 販売店舗
+  "dnp_kbn": payload.dnp_kbn default "", // 購入区分
+  "ord_cstmr_kbn": payload.ord_cstmr_kbn default "", // 定期区分
+  "cust_cd": payload.cust_cd default "", // 販売先会社コード
+  "cust_so_no": payload.cust_so_no default "", // 客注番号
+  "so_no": payload.so_no default "", // 受注番号
+  "use_pnt_tax": payload.use_pnt_tax default 0, // 利用ポイント消費税（標準税率分）
+  "sagaku_tax": payload.sagaku_tax default 0, // 差額調整消費税（標準税率分）
+  "use_pnt_2": payload.use_pnt_2 default 0, // 利用ポイント（軽減税率分）
+  
+  // 最終項目（181-216）
+  "use_pnt_tax_2": payload.use_pnt_tax_2 default 0, // 利用ポイント消費税（軽減税率分）
+  "sagaku_2": payload.sagaku_2 default 0, // 差額調整（軽減税率分）
+  "sagaku_tax_2": payload.sagaku_tax_2 default 0, // 差額調整消費税（軽減税率分）
+  "reducedtaxflg": payload.reducedtaxflg default "", // 軽減税率対象フラグ
+  "nhn_toi_no1": payload.nhn_toi_no1 default "", // 払込受領書用お問い合わせ番号1
+  "nhn_toi_no2": payload.nhn_toi_no2 default "", // 払込受領書用お問い合わせ番号2
+  "invoice_date": payload.invoice_date default "", // 請求書発行日
+  "bank_nm_jis": payload.bank_nm_jis default "", // 銀行名漢字
+  "bank_cd": payload.bank_cd default "", // 銀行コード
+  "branch_nm": payload.branch_nm default "", // 支店名漢字
+  "branch_cd": payload.branch_cd default "", // 支店コード
+  "deposit_type": payload.deposit_type default "", // 預金種別
+  "account_num": payload.account_num default "", // 口座番号
+  "bank_account_nm": payload.bank_account_nm default "", // 銀行口座名義
+  "buyer_nm": payload.buyer_nm default "", // 購入者氏名
+  "ex_amnt_std": payload.ex_amnt_std default 0, // 税抜金額（標準税率分）
+  "tax_std": payload.tax_std default 0, // 消費税（標準税率分）
+  "ex_amnt_red": payload.ex_amnt_red default 0, // 税抜金額（軽減税率分）
+  "tax_red": payload.tax_red default 0, // 消費税（軽減税率分）
+  "ext_order_code": payload.ext_order_code default "", // 外部注文コード
+  "mall_coupon": 0, // モール原資クーポン金額（固定値）
+  "store_coupon": 0, // 店舗原資クーポン金額（固定値）
+  "mall_use_pnt": 0, // モール使用ポイント（固定値）
+  "dlvry_plcmnt_cd": payload.dlvry_plcmnt_cd default "", // 配達場所指定コード
+  "notice_mail_addr": payload.notice_mail_addr default "", // 通知e-mailアドレス
+  
+  // 内部処理ID2項目
+  "CustNo": payload.CustNo default "", // 顧客番号
+  "ShipmentNo": payload.ShipmentNo default "", // 出荷番号
+  "TagManagementNo": payload.TagManagementNo default "", // 荷札管理番号
+  "SplitNo": payload.SplitNo default "" // スプリット番号
+}]]></ee:set-variable>
+            </ee:variables>
+        </ee:transform>
+    </sub-flow>
 </mule>
