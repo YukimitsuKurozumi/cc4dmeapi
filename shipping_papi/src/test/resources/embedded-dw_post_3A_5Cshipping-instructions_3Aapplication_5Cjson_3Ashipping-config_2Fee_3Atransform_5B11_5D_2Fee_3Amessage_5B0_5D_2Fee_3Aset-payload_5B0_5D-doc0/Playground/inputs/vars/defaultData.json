@@ -1,0 +1,7 @@
+{
+  "targetSystem": "dolor",
+  "processingInstructions": {
+    "standardProcess": false,
+    "batchProcess": true
+  }
+}

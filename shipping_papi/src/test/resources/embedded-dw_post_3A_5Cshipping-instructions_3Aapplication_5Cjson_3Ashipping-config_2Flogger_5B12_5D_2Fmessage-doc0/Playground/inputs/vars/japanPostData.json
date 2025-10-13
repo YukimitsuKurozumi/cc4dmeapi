@@ -1,0 +1,8 @@
+{
+  "carrier": "semper",
+  "apiEndpoint": "libero",
+  "authToken": "ut",
+  "serviceType": "ut",
+  "trackingEnabled": false,
+  "cashOnDelivery": true
+}

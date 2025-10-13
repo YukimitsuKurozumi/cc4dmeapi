@@ -1,0 +1,8 @@
+{
+  "targetSystem": "tincidunt",
+  "processingInstructions": {
+    "validateInventory": true,
+    "checkCapacity": false,
+    "notifyWarehouse": false
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "targetSystem": "libero",
+  "processingInstructions": {
+    "autoProcess": true,
+    "generateLabel": true,
+    "updateInventory": true
+  }
+}

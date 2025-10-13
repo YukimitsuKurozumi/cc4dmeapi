@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd ">
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:wm-ss-api="http://www.mulesoft.org/schema/mule/wm-ss-api" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
+	http://www.mulesoft.org/schema/mule/wm-ss-api http://www.mulesoft.org/schema/mule/wm-ss-api/current/mule-wm-ss-api.xsd">
     <http:listener-config name="shipping-httpListenerConfig">
         <http:listener-connection host="0.0.0.0" port="8081" />
     </http:listener-config>
     <apikit:config name="shipping-config" api="resource::5733abe5-08b6-4bb3-a0ae-fd462d88c02a:shipping:1.1.0:oas:zip:shipping.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
+    <wm-ss-api:config name="wm-ss-api-config" doc:name="WM SS API Config" property_host="localhost" property_port="8080" property_protocol="HTTP" />
     <flow name="shipping-main">
         <http:listener config-ref="shipping-httpListenerConfig" path="/api/*">
             <http:response statusCode="#[vars.httpStatus default 200]">
@@ -157,6 +160,93 @@ now()]]></ee:set-variable>
         <flow-ref name="shipping-carrier-determination" doc:name="配送会社判定実行"/>
         
         <logger level="INFO" message="配送会社判定結果: #[vars.carrierResult]" doc:name="配送会社判定結果ログ"/>
+        
+        <!-- API呼び出し用データ変換 -->
+        <ee:transform doc:name="API呼び出し用データ変換">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+var originalData = vars.originalShippingData
+var distributionResult = vars.distributionResult
+var carrierResult = vars.carrierResult
+var carrierData = 
+    if (vars.yamatoData != null) vars.yamatoData
+    else if (vars.sagawaData != null) vars.sagawaData
+    else if (vars.japanPostData != null) vars.japanPostData
+    else vars.defaultCarrierData default {}
+
+var systemData = 
+    if (vars.systemAData != null) vars.systemAData
+    else if (vars.systemBData != null) vars.systemBData
+    else if (vars.expressData != null) vars.expressData
+    else vars.defaultData default {}
+
+---
+{
+    "shipmentId": uuid(),
+    "orderNumber": originalData.orderNumber,
+    "companyCode": originalData.companyCode,
+    "warehouseCode": originalData.warehouseCode,
+    "shippingType": originalData.shippingType,
+    "urgencyFlag": originalData.urgencyFlag,
+    "customer": {
+        "customerId": originalData.customerInfo.customerId,
+        "customerName": originalData.customerInfo.customerName,
+        "address": {
+            "prefecture": originalData.customerInfo.address.prefecture,
+            "city": originalData.customerInfo.address.city,
+            "street": originalData.customerInfo.address.street,
+            "postalCode": originalData.destinationPostalCode default "",
+            "region": originalData.destinationRegion
+        }
+    },
+    "items": originalData.items map (item, index) -> {
+        "itemCode": item.itemCode,
+        "itemName": item.itemName,
+        "quantity": item.quantity,
+        "unitPrice": item.unitPrice,
+        "totalPrice": item.quantity * item.unitPrice
+    },
+    "shipping": {
+        "shippingDate": originalData.shippingDate,
+        "deliveryDate": originalData.deliveryDate,
+        "packageWeight": originalData.packageWeight default 0,
+        "packageSize": originalData.packageSize default "MEDIUM",
+        "specialHandling": originalData.specialHandling default false,
+        "specialInstructions": originalData.specialInstructions default ""
+    },
+    "distribution": {
+        "distributionTarget": distributionResult.distributionTarget,
+        "priority": distributionResult.priority,
+        "targetSystem": systemData.targetSystem default distributionResult.distributionTarget,
+        "processingInstructions": systemData.processingInstructions default {}
+    },
+    "carrier": {
+        "carrierCode": carrierResult.carrierCode,
+        "carrierName": carrierResult.carrierName,
+        "estimatedDeliveryDays": carrierResult.estimatedDeliveryDays,
+        "estimatedShippingCost": carrierResult.estimatedShippingCost,
+        "apiEndpoint": carrierData.apiEndpoint default "",
+        "authToken": carrierData.authToken default "",
+        "serviceType": carrierData.serviceType default carrierResult.carrierCode,
+        "trackingEnabled": carrierData.trackingEnabled default false,
+        "insuranceRequired": carrierData.insuranceRequired default false,
+        "signatureRequired": carrierData.signatureRequired default false,
+        "cashOnDelivery": carrierData.cashOnDelivery default false
+    },
+    "metadata": {
+        "receivedAt": vars.receivedTimestamp as String {format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"},
+        "processedAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"},
+        "version": "1.0",
+        "source": "shipping-papi"
+    }
+}]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        
+        <logger level="INFO" message="API呼び出し用データ: #[payload]" doc:name="API呼び出しデータログ"/>
+        
+        <wm-ss-api:create-shipment config-ref="wm-ss-api-config" doc:name="Create shipment" doc:id="ahpxqj"/>
         
         <!-- レスポンス生成 -->
         <ee:transform doc:name="レスポンス生成">

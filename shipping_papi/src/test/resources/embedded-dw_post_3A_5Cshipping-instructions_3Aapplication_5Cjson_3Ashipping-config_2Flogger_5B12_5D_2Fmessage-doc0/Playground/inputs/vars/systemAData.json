@@ -1,0 +1,8 @@
+{
+  "targetSystem": "molestie",
+  "processingInstructions": {
+    "validateInventory": false,
+    "checkCapacity": true,
+    "notifyWarehouse": false
+  }
+}

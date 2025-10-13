@@ -1,0 +1,8 @@
+{
+  "targetSystem": "felis",
+  "processingInstructions": {
+    "autoProcess": false,
+    "generateLabel": true,
+    "updateInventory": false
+  }
+}

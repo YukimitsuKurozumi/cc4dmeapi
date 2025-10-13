@@ -1,0 +1,45 @@
+{
+  "shipmentId": "ipsum",
+  "customer": {
+    "address": {}
+  },
+  "shipping": {},
+  "distribution": {
+    "distributionTarget": "aliquam",
+    "priority": "nisi",
+    "targetSystem": "consectetur",
+    "processingInstructions": {
+      "validateInventory": true,
+      "checkCapacity": true,
+      "notifyWarehouse": true,
+      "autoProcess": false,
+      "generateLabel": true,
+      "updateInventory": false,
+      "priority": "adipiscing",
+      "immediateProcess": true,
+      "notifyManager": true,
+      "trackingRequired": true,
+      "standardProcess": false,
+      "batchProcess": true
+    }
+  },
+  "carrier": {
+    "carrierCode": "sodales",
+    "carrierName": "elit",
+    "estimatedDeliveryDays": 37,
+    "estimatedShippingCost": 63,
+    "apiEndpoint": "eget",
+    "authToken": "risus",
+    "serviceType": "ut",
+    "trackingEnabled": true,
+    "insuranceRequired": true,
+    "signatureRequired": false,
+    "cashOnDelivery": true
+  },
+  "metadata": {
+    "receivedAt": "sodales",
+    "processedAt": "justo",
+    "version": "dolor",
+    "source": "consectetur"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "targetSystem": "erat",
+  "processingInstructions": {
+    "standardProcess": true,
+    "batchProcess": false
+  }
+}
