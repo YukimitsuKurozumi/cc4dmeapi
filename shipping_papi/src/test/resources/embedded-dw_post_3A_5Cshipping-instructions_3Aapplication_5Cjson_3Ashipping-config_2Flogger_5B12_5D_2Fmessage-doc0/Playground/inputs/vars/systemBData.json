@@ -1,8 +1,8 @@
 {
-  "targetSystem": "felis",
+  "targetSystem": "dui",
   "processingInstructions": {
     "autoProcess": false,
-    "generateLabel": true,
-    "updateInventory": false
+    "generateLabel": false,
+    "updateInventory": true
   }
 }

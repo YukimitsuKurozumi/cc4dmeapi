@@ -1,7 +1,7 @@
 {
-  "targetSystem": "dolor",
+  "targetSystem": "Nunc",
   "processingInstructions": {
-    "standardProcess": false,
+    "standardProcess": true,
     "batchProcess": true
   }
 }

@@ -1,8 +1,8 @@
 {
-  "carrier": "semper",
-  "apiEndpoint": "libero",
-  "authToken": "ut",
-  "serviceType": "ut",
-  "trackingEnabled": false,
-  "cashOnDelivery": true
+  "carrier": "vitae",
+  "apiEndpoint": "In",
+  "authToken": "pretium",
+  "serviceType": "Aliquam",
+  "trackingEnabled": true,
+  "cashOnDelivery": false
 }

@@ -1,0 +1,73 @@
+{
+  "basicConstraints": 67,
+  "criticalExtensionOIDs": [
+    "erat",
+    "sodales",
+    "convallis"
+  ],
+  "extendedKeyUsage": [
+    "dolor",
+    "dolor"
+  ],
+  "extensions": [
+    {
+      "criticality": true,
+      "oid": "molestie"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Alvina",
+      "type": 15
+    }
+  ],
+  "issuerDN": {
+    "commonName": "at",
+    "name": "Buddy"
+  },
+  "issuerUniqueID": [
+    false,
+    true,
+    true
+  ],
+  "issuerX500Principal": {
+    "name": "Alison"
+  },
+  "keyUsage": [
+    true,
+    false
+  ],
+  "name": "Adele",
+  "nonCriticalExtensionOIDs": [
+    "dolor",
+    "lorem",
+    "viverra"
+  ],
+  "publicKey": {
+    "algorithm": "convallis",
+    "modulus": 6,
+    "params": 64,
+    "publicKey": "risus"
+  },
+  "serialNumber": 1,
+  "serialNumberObject": {
+    "serialNumber": 4
+  },
+  "sigAlgName": "eget",
+  "sigAlgOID": "Fusce",
+  "subjectAlternativeNames": [
+    {
+      "name": "Allan",
+      "type": 18
+    }
+  ],
+  "subjectDN": {
+    "commonName": "dolor",
+    "name": "Cruz"
+  },
+  "subjectX500Principal": {
+    "name": "Cletus"
+  },
+  "type": "amet",
+  "version": 35
+}

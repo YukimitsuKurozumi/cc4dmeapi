@@ -74,7 +74,7 @@ fun formatDateTime(dateTimeStr) =
             var cleanStr = toString(dateTimeStr)
             ---
             if (cleanStr != null and (cleanStr contains "/") and (cleanStr contains " ") and (cleanStr contains ":"))
-                (cleanStr replace "/" with "-" replace " " with "T") ++ ":00"
+                (cleanStr replace "/" with "-" replace " " with "T") ++ ":00Z"
             else
                 null // 不正な形式の場合はnull
         }
@@ -301,7 +301,7 @@ fun validateRequiredString(value, fieldName) =
             </ee:transform>
             
             <!-- Call Shipping API for each record -->
-            <logger doc:id="log-api-call" doc:name="Log API Call" level="INFO" message="Calling Shipping API for ShipmentNo: #[payload.ShipmentNo]"/>
+            <logger doc:id="log-api-call" doc:name="Log API Call" level="INFO" message="#[payload]"/>
             <http:request method="POST" doc:name="Call Shipping API" doc:id="call-shipping-api" config-ref="HTTP_Request_configuration" path="/api/shipping-instructions">
                 <http:headers><![CDATA[#[{
 	"Content-Type" : "application/json"

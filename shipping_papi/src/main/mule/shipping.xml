@@ -1,170 +1,162 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns:wm-ss-api="http://www.mulesoft.org/schema/mule/wm-ss-api" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd 
-	http://www.mulesoft.org/schema/mule/wm-ss-api http://www.mulesoft.org/schema/mule/wm-ss-api/current/mule-wm-ss-api.xsd">
-    <http:listener-config name="shipping-httpListenerConfig">
-        <http:listener-connection host="0.0.0.0" port="8081" />
-    </http:listener-config>
-    <apikit:config name="shipping-config" api="resource::5733abe5-08b6-4bb3-a0ae-fd462d88c02a:shipping:1.1.0:oas:zip:shipping.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" />
-    <wm-ss-api:config name="wm-ss-api-config" doc:name="WM SS API Config" property_host="localhost" property_port="8080" property_protocol="HTTP" />
-    <flow name="shipping-main">
-        <http:listener config-ref="shipping-httpListenerConfig" path="/api/*">
-            <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:response>
-            <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:error-response>
-        </http:listener>
-        <apikit:router config-ref="shipping-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:BAD_REQUEST">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:apikit="http://www.mulesoft.org/schema/mule/mule-apikit" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:wm-ss-api="http://www.mulesoft.org/schema/mule/wm-ss-api" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd http://www.mulesoft.org/schema/mule/mule-apikit http://www.mulesoft.org/schema/mule/mule-apikit/current/mule-apikit.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd   http://www.mulesoft.org/schema/mule/wm-ss-api http://www.mulesoft.org/schema/mule/wm-ss-api/current/mule-wm-ss-api.xsd">
+ <http:listener-config name="shipping-httpListenerConfig">
+  <http:listener-connection host="0.0.0.0" port="8081"></http:listener-connection>
+ </http:listener-config>
+ <apikit:config api="resource::5733abe5-08b6-4bb3-a0ae-fd462d88c02a:shipping:1.1.0:oas:zip:shipping.yaml" httpStatusVarName="httpStatus" name="shipping-config" outboundHeadersMapName="outboundHeaders"></apikit:config>
+ <wm-ss-api:config doc:name="WM SS API Config" name="wm-ss-api-config" property_basePath="/api" property_host="wms-sapi.jp-e1.cloudhub.io" property_port="80" property_protocol="HTTP">
+  <wm-ss-api:connection></wm-ss-api:connection>
+ </wm-ss-api:config>
+ <flow name="shipping-main">
+  <http:listener config-ref="shipping-httpListenerConfig" path="/api/*">
+   <http:response statusCode="#[vars.httpStatus default 200]">
+    <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+   </http:response>
+   <http:error-response statusCode="#[vars.httpStatus default 500]">
+    <http:body>#[payload]</http:body>
+    <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+   </http:error-response>
+  </http:listener>
+  <apikit:router config-ref="shipping-config"></apikit:router>
+  <error-handler>
+   <on-error-propagate type="APIKIT:BAD_REQUEST">
+    <ee:transform doc:name="Transform Message">
+     <ee:message>
+      <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {message: "Bad request"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">400</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+     </ee:message>
+     <ee:variables>
+      <ee:set-variable variableName="httpStatus">400</ee:set-variable>
+     </ee:variables>
+    </ee:transform>
+   </on-error-propagate>
+   <on-error-propagate type="APIKIT:NOT_FOUND">
+    <ee:transform doc:name="Transform Message">
+     <ee:message>
+      <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+     </ee:message>
+     <ee:variables>
+      <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+     </ee:variables>
+    </ee:transform>
+   </on-error-propagate>
+   <on-error-propagate type="APIKIT:METHOD_NOT_ALLOWED">
+    <ee:transform doc:name="Transform Message">
+     <ee:message>
+      <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {message: "Method not allowed"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">405</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+     </ee:message>
+     <ee:variables>
+      <ee:set-variable variableName="httpStatus">405</ee:set-variable>
+     </ee:variables>
+    </ee:transform>
+   </on-error-propagate>
+   <on-error-propagate type="APIKIT:NOT_ACCEPTABLE">
+    <ee:transform doc:name="Transform Message">
+     <ee:message>
+      <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {message: "Not acceptable"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">406</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+     </ee:message>
+     <ee:variables>
+      <ee:set-variable variableName="httpStatus">406</ee:set-variable>
+     </ee:variables>
+    </ee:transform>
+   </on-error-propagate>
+   <on-error-propagate type="APIKIT:UNSUPPORTED_MEDIA_TYPE">
+    <ee:transform doc:name="Transform Message">
+     <ee:message>
+      <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {message: "Unsupported media type"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">415</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-            <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+     </ee:message>
+     <ee:variables>
+      <ee:set-variable variableName="httpStatus">415</ee:set-variable>
+     </ee:variables>
+    </ee:transform>
+   </on-error-propagate>
+   <on-error-propagate type="APIKIT:NOT_IMPLEMENTED">
+    <ee:transform doc:name="Transform Message">
+     <ee:message>
+      <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {message: "Not Implemented"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">501</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
-    </flow>
-    <flow name="shipping-console">
-        <http:listener config-ref="shipping-httpListenerConfig" path="/console/*">
-            <http:response statusCode="#[vars.httpStatus default 200]">
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:response>
-            <http:error-response statusCode="#[vars.httpStatus default 500]">
-                <http:body>#[payload]</http:body>
-                <http:headers>#[vars.outboundHeaders default {}]</http:headers>
-            </http:error-response>
-        </http:listener>
-        <apikit:console config-ref="shipping-config" />
-        <error-handler>
-            <on-error-propagate type="APIKIT:NOT_FOUND">
-                <ee:transform doc:name="Transform Message">
-                    <ee:message>
-                        <ee:set-payload><![CDATA[%dw 2.0
+     </ee:message>
+     <ee:variables>
+      <ee:set-variable variableName="httpStatus">501</ee:set-variable>
+     </ee:variables>
+    </ee:transform>
+   </on-error-propagate>
+  </error-handler>
+ </flow>
+ <flow name="shipping-console">
+  <http:listener config-ref="shipping-httpListenerConfig" path="/console/*">
+   <http:response statusCode="#[vars.httpStatus default 200]">
+    <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+   </http:response>
+   <http:error-response statusCode="#[vars.httpStatus default 500]">
+    <http:body>#[payload]</http:body>
+    <http:headers>#[vars.outboundHeaders default {}]</http:headers>
+   </http:error-response>
+  </http:listener>
+  <apikit:console config-ref="shipping-config"></apikit:console>
+  <error-handler>
+   <on-error-propagate type="APIKIT:NOT_FOUND">
+    <ee:transform doc:name="Transform Message">
+     <ee:message>
+      <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {message: "Resource not found"}]]></ee:set-payload>
-                    </ee:message>
-                    <ee:variables>
-                        <ee:set-variable variableName="httpStatus">404</ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </on-error-propagate>
-        </error-handler>
-    </flow>
-    <flow name="post:\shipping-instructions:application\json:shipping-config">
-        <logger level="INFO" message="出荷指示データを受信しました" doc:name="受信ログ"/>
-        
-        <!-- 受信データを変数に保存 -->
-        <ee:transform doc:name="受信データ保存">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+     </ee:message>
+     <ee:variables>
+      <ee:set-variable variableName="httpStatus">404</ee:set-variable>
+     </ee:variables>
+    </ee:transform>
+   </on-error-propagate>
+  </error-handler>
+ </flow>
+ <flow name="post:\shipping-instructions:application\json:shipping-config">
+  <logger doc:name="受信ログ" level="INFO" message="出荷指示データを受信しました"></logger>
+  <!-- 受信データを変数に保存 -->
+  <ee:transform doc:name="受信データ保存">
+   <ee:message>
+    <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
-            </ee:message>
-            <ee:variables>
-                <ee:set-variable variableName="originalShippingData"><![CDATA[%dw 2.0
-output application/json
+   </ee:message>
+   <ee:variables>
+    <ee:set-variable variableName="originalShippingData"><![CDATA[%dw 2.0
+output application/java
 ---
 payload]]></ee:set-variable>
-                <ee:set-variable variableName="receivedTimestamp"><![CDATA[%dw 2.0
+    <ee:set-variable variableName="receivedTimestamp"><![CDATA[%dw 2.0
 output application/java
 ---
 now()]]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        
-        <logger level="INFO" message="受信データ: #[vars.originalShippingData]" doc:name="データ内容ログ"/>
-        
-        <!-- 振分判定サブフローを呼び出し -->
-        <flow-ref name="shipping-distribution-logic" doc:name="振分判定実行"/>
-        
-        <logger level="INFO" message="振分判定結果: #[vars.distributionResult]" doc:name="判定結果ログ"/>
-        
-        <!-- 配送会社判定サブフローを呼び出し -->
-        <flow-ref name="shipping-carrier-determination" doc:name="配送会社判定実行"/>
-        
-        <logger level="INFO" message="配送会社判定結果: #[vars.carrierResult]" doc:name="配送会社判定結果ログ"/>
-        
-        <!-- API呼び出し用データ変換 -->
-        <ee:transform doc:name="API呼び出し用データ変換">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+   </ee:variables>
+  </ee:transform>
+  <logger doc:name="データ内容ログ" level="INFO" message="受信データ: #[vars.originalShippingData]"></logger>
+  <!-- 振分判定サブフローを呼び出し -->
+  <flow-ref doc:name="振分判定実行" name="shipping-distribution-logic"></flow-ref>
+  <logger doc:name="判定結果ログ" level="INFO" message="振分判定結果: #[vars.distributionResult]"></logger>
+  <!-- 配送会社判定サブフローを呼び出し -->
+  <flow-ref doc:name="配送会社判定実行" name="shipping-carrier-determination"></flow-ref>
+  <logger doc:name="配送会社判定結果ログ" level="INFO" message="配送会社判定結果: #[vars.carrierResult]"></logger>
+  <!-- API呼び出し用データ変換 -->
+  <ee:transform doc:name="API呼び出し用データ変換">
+   <ee:message>
+    <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 var originalData = vars.originalShippingData
 var distributionResult = vars.distributionResult
@@ -241,17 +233,14 @@ var systemData =
         "source": "shipping-papi"
     }
 }]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-        
-        <logger level="INFO" message="API呼び出し用データ: #[payload]" doc:name="API呼び出しデータログ"/>
-        
-        <wm-ss-api:create-shipment config-ref="wm-ss-api-config" doc:name="Create shipment" doc:id="ahpxqj"/>
-        
-        <!-- レスポンス生成 -->
-        <ee:transform doc:name="レスポンス生成">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+   </ee:message>
+  </ee:transform>
+  <logger doc:name="API呼び出しデータログ" level="INFO" message="API呼び出し用データ: #[payload]"></logger>
+  <wm-ss-api:create-shipment config-ref="wm-ss-api-config" doc:id="ahpxqj" doc:name="Create shipment"></wm-ss-api:create-shipment>
+  <!-- レスポンス生成 -->
+  <ee:transform doc:name="レスポンス生成">
+   <ee:message>
+    <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -261,23 +250,21 @@ output application/json
     "carrierResult": vars.carrierResult,
     "receivedAt": vars.receivedTimestamp as String {format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"}
 }]]></ee:set-payload>
-            </ee:message>
-        </ee:transform>
-    </flow>
-    
-    <!-- 振分判定ロジックのサブフロー -->
-    <sub-flow name="shipping-distribution-logic">
-        <logger level="INFO" message="振分判定ロジックを開始します" doc:name="判定開始ログ"/>
-        
-        <ee:transform doc:name="振分判定処理">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+   </ee:message>
+  </ee:transform>
+ </flow>
+ <!-- 振分判定ロジックのサブフロー -->
+ <sub-flow name="shipping-distribution-logic">
+  <logger doc:name="判定開始ログ" level="INFO" message="振分判定ロジックを開始します"></logger>
+  <ee:transform doc:name="振分判定処理">
+   <ee:message>
+    <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
-            </ee:message>
-            <ee:variables>
-                <ee:set-variable variableName="distributionResult"><![CDATA[%dw 2.0
+   </ee:message>
+   <ee:variables>
+    <ee:set-variable variableName="distributionResult"><![CDATA[%dw 2.0
 output application/json
 var shippingData = vars.originalShippingData
 var companyCode = shippingData.companyCode default ""
@@ -319,18 +306,16 @@ var priority =
     },
     "processedAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"}
 }]]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        
-        <logger level="INFO" message="振分先: #[vars.distributionResult.distributionTarget], 優先度: #[vars.distributionResult.priority]" doc:name="判定詳細ログ"/>
-        
-        <!-- 振分先に応じた追加処理のための条件分岐 -->
-        <choice doc:name="振分先別処理">
-            <when expression="#[vars.distributionResult.distributionTarget == 'SYSTEM_A']">
-                <logger level="INFO" message="システムA向け処理を準備します" doc:name="システムA処理ログ"/>
-                <ee:transform doc:name="システムA用データ変換">
-                    <ee:variables>
-                        <ee:set-variable variableName="systemAData"><![CDATA[%dw 2.0
+   </ee:variables>
+  </ee:transform>
+  <logger doc:name="判定詳細ログ" level="INFO" message="振分先: #[vars.distributionResult.distributionTarget], 優先度: #[vars.distributionResult.priority]"></logger>
+  <!-- 振分先に応じた追加処理のための条件分岐 -->
+  <choice doc:name="振分先別処理">
+   <when expression="#[vars.distributionResult.distributionTarget == 'SYSTEM_A']">
+    <logger doc:name="システムA処理ログ" level="INFO" message="システムA向け処理を準備します"></logger>
+    <ee:transform doc:name="システムA用データ変換">
+     <ee:variables>
+      <ee:set-variable variableName="systemAData"><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -342,14 +327,14 @@ output application/json
         notifyWarehouse: true
     }
 }]]></ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </when>
-            <when expression="#[vars.distributionResult.distributionTarget == 'SYSTEM_B']">
-                <logger level="INFO" message="システムB向け処理を準備します" doc:name="システムB処理ログ"/>
-                <ee:transform doc:name="システムB用データ変換">
-                    <ee:variables>
-                        <ee:set-variable variableName="systemBData"><![CDATA[%dw 2.0
+     </ee:variables>
+    </ee:transform>
+   </when>
+   <when expression="#[vars.distributionResult.distributionTarget == 'SYSTEM_B']">
+    <logger doc:name="システムB処理ログ" level="INFO" message="システムB向け処理を準備します"></logger>
+    <ee:transform doc:name="システムB用データ変換">
+     <ee:variables>
+      <ee:set-variable variableName="systemBData"><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -361,14 +346,14 @@ output application/json
         updateInventory: true
     }
 }]]></ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </when>
-            <when expression="#[vars.distributionResult.distributionTarget == 'EXPRESS_SYSTEM']">
-                <logger level="INFO" message="緊急配送システム向け処理を準備します" doc:name="緊急配送処理ログ"/>
-                <ee:transform doc:name="緊急配送用データ変換">
-                    <ee:variables>
-                        <ee:set-variable variableName="expressData"><![CDATA[%dw 2.0
+     </ee:variables>
+    </ee:transform>
+   </when>
+   <when expression="#[vars.distributionResult.distributionTarget == 'EXPRESS_SYSTEM']">
+    <logger doc:name="緊急配送処理ログ" level="INFO" message="緊急配送システム向け処理を準備します"></logger>
+    <ee:transform doc:name="緊急配送用データ変換">
+     <ee:variables>
+      <ee:set-variable variableName="expressData"><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -381,14 +366,14 @@ output application/json
         trackingRequired: true
     }
 }]]></ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </when>
-            <otherwise>
-                <logger level="INFO" message="デフォルトシステム向け処理を準備します" doc:name="デフォルト処理ログ"/>
-                <ee:transform doc:name="デフォルト用データ変換">
-                    <ee:variables>
-                        <ee:set-variable variableName="defaultData"><![CDATA[%dw 2.0
+     </ee:variables>
+    </ee:transform>
+   </when>
+   <otherwise>
+    <logger doc:name="デフォルト処理ログ" level="INFO" message="デフォルトシステム向け処理を準備します"></logger>
+    <ee:transform doc:name="デフォルト用データ変換">
+     <ee:variables>
+      <ee:set-variable variableName="defaultData"><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -399,27 +384,24 @@ output application/json
         batchProcess: true
     }
 }]]></ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </otherwise>
-        </choice>
-        
-        <logger level="INFO" message="振分判定ロジックが完了しました" doc:name="判定完了ログ"/>
-    </sub-flow>
-    
-    <!-- 配送会社判定ロジックのサブフロー -->
-    <sub-flow name="shipping-carrier-determination">
-        <logger level="INFO" message="配送会社判定ロジックを開始します" doc:name="配送会社判定開始ログ"/>
-        
-        <ee:transform doc:name="配送会社判定処理">
-            <ee:message>
-                <ee:set-payload><![CDATA[%dw 2.0
+     </ee:variables>
+    </ee:transform>
+   </otherwise>
+  </choice>
+  <logger doc:name="判定完了ログ" level="INFO" message="振分判定ロジックが完了しました"></logger>
+ </sub-flow>
+ <!-- 配送会社判定ロジックのサブフロー -->
+ <sub-flow name="shipping-carrier-determination">
+  <logger doc:name="配送会社判定開始ログ" level="INFO" message="配送会社判定ロジックを開始します"></logger>
+  <ee:transform doc:name="配送会社判定処理">
+   <ee:message>
+    <ee:set-payload><![CDATA[%dw 2.0
 output application/json
 ---
 payload]]></ee:set-payload>
-            </ee:message>
-            <ee:variables>
-                <ee:set-variable variableName="carrierResult"><![CDATA[%dw 2.0
+   </ee:message>
+   <ee:variables>
+    <ee:set-variable variableName="carrierResult"><![CDATA[%dw 2.0
 output application/json
 var shippingData = vars.originalShippingData
 var destinationPostalCode = shippingData.destinationPostalCode default ""
@@ -498,18 +480,16 @@ var shippingCost =
     },
     "processedAt": now() as String {format: "yyyy-MM-dd'T'HH:mm:ss.SSSZ"}
 }]]></ee:set-variable>
-            </ee:variables>
-        </ee:transform>
-        
-        <logger level="INFO" message="配送会社: #[vars.carrierResult.carrierName], 配送日数: #[vars.carrierResult.estimatedDeliveryDays]日, 配送料金: #[vars.carrierResult.estimatedShippingCost]円" doc:name="配送会社判定詳細ログ"/>
-        
-        <!-- 配送会社別の追加処理 -->
-        <choice doc:name="配送会社別処理">
-            <when expression="#[vars.carrierResult.carrierCode contains 'YAMATO']">
-                <logger level="INFO" message="ヤマト運輸向け処理を準備します" doc:name="ヤマト運輸処理ログ"/>
-                <ee:transform doc:name="ヤマト運輸用データ変換">
-                    <ee:variables>
-                        <ee:set-variable variableName="yamatoData"><![CDATA[%dw 2.0
+   </ee:variables>
+  </ee:transform>
+  <logger doc:name="配送会社判定詳細ログ" level="INFO" message="配送会社: #[vars.carrierResult.carrierName], 配送日数: #[vars.carrierResult.estimatedDeliveryDays]日, 配送料金: #[vars.carrierResult.estimatedShippingCost]円"></logger>
+  <!-- 配送会社別の追加処理 -->
+  <choice doc:name="配送会社別処理">
+   <when expression="#[vars.carrierResult.carrierCode contains 'YAMATO']">
+    <logger doc:name="ヤマト運輸処理ログ" level="INFO" message="ヤマト運輸向け処理を準備します"></logger>
+    <ee:transform doc:name="ヤマト運輸用データ変換">
+     <ee:variables>
+      <ee:set-variable variableName="yamatoData"><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -520,14 +500,14 @@ output application/json
     trackingEnabled: true,
     insuranceRequired: vars.carrierResult.estimatedShippingCost > 10000
 }]]></ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </when>
-            <when expression="#[vars.carrierResult.carrierCode contains 'SAGAWA']">
-                <logger level="INFO" message="佐川急便向け処理を準備します" doc:name="佐川急便処理ログ"/>
-                <ee:transform doc:name="佐川急便用データ変換">
-                    <ee:variables>
-                        <ee:set-variable variableName="sagawaData"><![CDATA[%dw 2.0
+     </ee:variables>
+    </ee:transform>
+   </when>
+   <when expression="#[vars.carrierResult.carrierCode contains 'SAGAWA']">
+    <logger doc:name="佐川急便処理ログ" level="INFO" message="佐川急便向け処理を準備します"></logger>
+    <ee:transform doc:name="佐川急便用データ変換">
+     <ee:variables>
+      <ee:set-variable variableName="sagawaData"><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -538,14 +518,14 @@ output application/json
     trackingEnabled: true,
     signatureRequired: vars.originalShippingData.packageWeight > 20
 }]]></ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </when>
-            <when expression="#[vars.carrierResult.carrierCode contains 'JAPAN_POST']">
-                <logger level="INFO" message="日本郵便向け処理を準備します" doc:name="日本郵便処理ログ"/>
-                <ee:transform doc:name="日本郵便用データ変換">
-                    <ee:variables>
-                        <ee:set-variable variableName="japanPostData"><![CDATA[%dw 2.0
+     </ee:variables>
+    </ee:transform>
+   </when>
+   <when expression="#[vars.carrierResult.carrierCode contains 'JAPAN_POST']">
+    <logger doc:name="日本郵便処理ログ" level="INFO" message="日本郵便向け処理を準備します"></logger>
+    <ee:transform doc:name="日本郵便用データ変換">
+     <ee:variables>
+      <ee:set-variable variableName="japanPostData"><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -556,14 +536,14 @@ output application/json
     trackingEnabled: false,
     cashOnDelivery: vars.originalShippingData.paymentMethod == "COD"
 }]]></ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </when>
-            <otherwise>
-                <logger level="INFO" message="デフォルト配送会社処理を準備します" doc:name="デフォルト配送会社処理ログ"/>
-                <ee:transform doc:name="デフォルト配送会社用データ変換">
-                    <ee:variables>
-                        <ee:set-variable variableName="defaultCarrierData"><![CDATA[%dw 2.0
+     </ee:variables>
+    </ee:transform>
+   </when>
+   <otherwise>
+    <logger doc:name="デフォルト配送会社処理ログ" level="INFO" message="デフォルト配送会社処理を準備します"></logger>
+    <ee:transform doc:name="デフォルト配送会社用データ変換">
+     <ee:variables>
+      <ee:set-variable variableName="defaultCarrierData"><![CDATA[%dw 2.0
 output application/json
 ---
 {
@@ -571,11 +551,10 @@ output application/json
     serviceType: vars.carrierResult.carrierCode,
     manualProcessRequired: true
 }]]></ee:set-variable>
-                    </ee:variables>
-                </ee:transform>
-            </otherwise>
-        </choice>
-        
-        <logger level="INFO" message="配送会社判定ロジックが完了しました" doc:name="配送会社判定完了ログ"/>
-    </sub-flow>
+     </ee:variables>
+    </ee:transform>
+   </otherwise>
+  </choice>
+  <logger doc:name="配送会社判定完了ログ" level="INFO" message="配送会社判定ロジックが完了しました"></logger>
+ </sub-flow>
 </mule>

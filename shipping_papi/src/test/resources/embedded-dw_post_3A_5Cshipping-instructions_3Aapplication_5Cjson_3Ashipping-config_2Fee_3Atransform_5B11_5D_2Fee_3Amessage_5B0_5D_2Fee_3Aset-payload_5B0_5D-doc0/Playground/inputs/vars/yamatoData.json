@@ -1,8 +1,8 @@
 {
-  "carrier": "eget",
-  "apiEndpoint": "ut",
-  "authToken": "amet",
-  "serviceType": "ipsum",
-  "trackingEnabled": true,
-  "insuranceRequired": false
+  "carrier": "ipsum",
+  "apiEndpoint": "felis",
+  "authToken": "molestie",
+  "serviceType": "tempor",
+  "trackingEnabled": false,
+  "insuranceRequired": true
 }

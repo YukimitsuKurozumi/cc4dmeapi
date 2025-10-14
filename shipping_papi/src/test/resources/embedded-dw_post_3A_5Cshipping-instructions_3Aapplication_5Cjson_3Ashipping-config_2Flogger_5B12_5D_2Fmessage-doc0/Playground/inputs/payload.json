@@ -1,45 +1,45 @@
 {
-  "shipmentId": "ipsum",
+  "shipmentId": "elit",
   "customer": {
     "address": {}
   },
   "shipping": {},
   "distribution": {
-    "distributionTarget": "aliquam",
-    "priority": "nisi",
-    "targetSystem": "consectetur",
+    "distributionTarget": "convallis",
+    "priority": "dolor",
+    "targetSystem": "mi",
     "processingInstructions": {
       "validateInventory": true,
       "checkCapacity": true,
       "notifyWarehouse": true,
       "autoProcess": false,
       "generateLabel": true,
-      "updateInventory": false,
-      "priority": "adipiscing",
+      "updateInventory": true,
+      "priority": "tempor",
       "immediateProcess": true,
       "notifyManager": true,
-      "trackingRequired": true,
+      "trackingRequired": false,
       "standardProcess": false,
-      "batchProcess": true
+      "batchProcess": false
     }
   },
   "carrier": {
-    "carrierCode": "sodales",
-    "carrierName": "elit",
-    "estimatedDeliveryDays": 37,
-    "estimatedShippingCost": 63,
-    "apiEndpoint": "eget",
-    "authToken": "risus",
-    "serviceType": "ut",
-    "trackingEnabled": true,
-    "insuranceRequired": true,
+    "carrierCode": "elit",
+    "carrierName": "risus",
+    "estimatedDeliveryDays": 58,
+    "estimatedShippingCost": 32,
+    "apiEndpoint": "a",
+    "authToken": "tincidunt",
+    "serviceType": "convallis",
+    "trackingEnabled": false,
+    "insuranceRequired": false,
     "signatureRequired": false,
-    "cashOnDelivery": true
+    "cashOnDelivery": false
   },
   "metadata": {
     "receivedAt": "sodales",
-    "processedAt": "justo",
-    "version": "dolor",
-    "source": "consectetur"
+    "processedAt": "lectus",
+    "version": "nibh",
+    "source": "nunc"
   }
 }

@@ -1,0 +1,1034 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: WMSsAPI
+  description: 倉庫管理システム（WMS）のAPI仕様
+  contact:
+    name: WMS API Support
+    email: support@wmssapi.com
+servers:
+  - url: https://api.wmssapi.com/v1
+    description: Production server
+  - url: https://staging-api.wmssapi.com/v1
+    description: Staging server
+paths:
+  /shipments:
+    get:
+      summary: 出荷データの一覧取得
+      description: 指定された条件に基づいて出荷データの一覧を取得します
+      parameters:
+        - name: shopCd
+          in: query
+          description: 店舗コード
+          schema:
+            type: string
+        - name: shipmentNo
+          in: query
+          description: 出荷番号
+          schema:
+            type: string
+        - name: dateFrom
+          in: query
+          description: 検索開始日（YYYY-MM-DD）
+          schema:
+            type: string
+            format: date
+        - name: dateTo
+          in: query
+          description: 検索終了日（YYYY-MM-DD）
+          schema:
+            type: string
+            format: date
+        - name: limit
+          in: query
+          description: 取得件数の上限
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 100
+        - name: offset
+          in: query
+          description: 取得開始位置
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: 出荷データの一覧
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipmentDataArray'
+        '400':
+          description: リクエストパラメータが不正です
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: 出荷データの登録
+      description: 新しい出荷データを登録します
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShipmentRequest'
+      responses:
+        '201':
+          description: 出荷データが正常に登録されました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "出荷データが正常に登録されました"
+                  registeredCount:
+                    type: integer
+                    example: 5
+        '400':
+          description: リクエストデータが不正です
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /shipments/{shipmentNo}:
+    get:
+      summary: 特定の出荷データの取得
+      description: 出荷番号を指定して特定の出荷データを取得します
+      parameters:
+        - name: shipmentNo
+          in: path
+          required: true
+          description: 出荷番号
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 出荷データの詳細
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ShipmentDataArray'
+        '404':
+          description: 指定された出荷番号のデータが見つかりません
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: 出荷データの更新
+      description: 指定された出荷番号のデータを更新します
+      parameters:
+        - name: shipmentNo
+          in: path
+          required: true
+          description: 出荷番号
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ShipmentData'
+      responses:
+        '200':
+          description: 出荷データが正常に更新されました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "出荷データが正常に更新されました"
+                  updatedCount:
+                    type: integer
+                    example: 3
+        '400':
+          description: リクエストデータが不正です
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: 指定された出荷番号のデータが見つかりません
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: 出荷データの削除
+      description: 指定された出荷番号のデータを削除します
+      parameters:
+        - name: shipmentNo
+          in: path
+          required: true
+          description: 出荷番号
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 出荷データが正常に削除されました
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: "出荷データが正常に削除されました"
+        '404':
+          description: 指定された出荷番号のデータが見つかりません
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: サーバー内部エラー
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    ShipmentRequest:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/ShipmentData'
+          description: 出荷データ
+        deliveryCompany:
+          type: object
+          properties:
+            code:
+              type: string
+              description: 配送会社コード
+            name:
+              type: string
+              description: 配送会社名
+          required:
+            - code
+            - name
+          description: 配送会社情報
+        deliveryBase:
+          type: object
+          properties:
+            code:
+              type: string
+              description: 配送拠点コード
+            name:
+              type: string
+              description: 配送拠点名
+            address:
+              type: string
+              description: 配送拠点住所
+          required:
+            - code
+            - name
+          description: 配送拠点情報
+      required:
+        - data
+        - deliveryCompany
+        - deliveryBase
+      description: 出荷データ登録リクエスト
+    ShipmentData:
+      type: object
+      properties:
+        DataKbn:
+          type: integer
+          description: データ区分
+        UpdateKbn:
+          type: integer
+          description: 更新区分
+        ShipmentKbn:
+          type: integer
+          description: 出荷区分
+        ShopOrderDate:
+          type: string
+          format: date
+          nullable: true
+          description: 店舗注文日
+        DeliveryScheDate:
+          type: string
+          format: date
+          nullable: true
+          description: 配送予定日
+        DlvCorpCd:
+          type: string
+          nullable: true
+          description: 配送会社コード
+        DlvBaseKbn:
+          type: integer
+          nullable: true
+          description: 配送拠点区分
+        ShopCd:
+          type: string
+          nullable: true
+          description: 店舗コード
+        ShipmentNo:
+          type: string
+          description: 出荷番号
+        ShipmentLineSeq:
+          type: integer
+          description: 出荷行連番
+        ShipmentLineNo:
+          type: string
+          nullable: true
+          description: 出荷行番号
+        SetCommodityKbn:
+          type: integer
+          nullable: true
+          description: セット商品区分
+        ItemCd:
+          type: string
+          description: 商品コード
+        SalesCommodityName:
+          type: string
+          description: 販売商品名
+        ShipmentQty:
+          type: number
+          description: 出荷数量
+        SalesPrice:
+          type: number
+          description: 販売価格
+        OrderCommodityYen:
+          type: number
+          description: 注文商品金額
+        DiscountYen:
+          type: number
+          description: 割引金額
+        OrderCommodityTax:
+          type: number
+          description: 注文商品税額
+        WrappingServiceName:
+          type: string
+          nullable: true
+          description: ラッピングサービス名
+        WrappingFee:
+          type: number
+          nullable: true
+          description: ラッピング料金
+        WrappingFeeTax:
+          type: number
+          nullable: true
+          description: ラッピング料金税額
+        SetItemCd:
+          type: string
+          nullable: true
+          description: セット商品コード
+        SetSalesCommodityName:
+          type: string
+          nullable: true
+          description: セット販売商品名
+        SetShipmentQty:
+          type: number
+          nullable: true
+          description: セット出荷数量
+        SetSalesPrice:
+          type: number
+          nullable: true
+          description: セット販売価格
+        SetOrderCommodityYen:
+          type: number
+          nullable: true
+          description: セット注文商品金額
+        SetDiscountYen:
+          type: number
+          nullable: true
+          description: セット割引金額
+        SetOrderCommodityTax:
+          type: number
+          nullable: true
+          description: セット注文商品税額
+        ArrivalNo:
+          type: string
+          nullable: true
+          description: 入荷番号
+        ArrivalLineNo:
+          type: string
+          nullable: true
+          description: 入荷行番号
+        Lot1:
+          type: string
+          nullable: true
+          description: ロット1
+        Lot2:
+          type: string
+          nullable: true
+          description: ロット2
+        Charge:
+          type: number
+          description: 手数料
+        ChargeTax:
+          type: number
+          description: 手数料税額
+        Shipping:
+          type: number
+          description: 送料
+        ShippingTax:
+          type: number
+          description: 送料税額
+        AdvancedYen:
+          type: number
+          description: 前払金額
+        StaffSalesFlg:
+          type: integer
+          nullable: true
+          description: スタッフ販売フラグ
+        ShipmentRequestDate:
+          type: string
+          format: date
+          nullable: true
+          description: 出荷依頼日
+        OrderReceiptDate:
+          type: string
+          format: date
+          nullable: true
+          description: 注文受付日
+        CreateBy:
+          type: string
+          nullable: true
+          description: 作成者
+        PayMethodKbn:
+          type: integer
+          nullable: true
+          description: 支払方法区分
+        CreditCardCorpCd:
+          type: string
+          nullable: true
+          description: クレジットカード会社コード
+        DLVOutForGIFTKbn:
+          type: integer
+          nullable: true
+          description: ギフト配送区分
+        CustNo:
+          type: string
+          description: 顧客番号
+        ZipNo:
+          type: string
+          description: 郵便番号
+        Adr1:
+          type: string
+          description: 住所1
+        Adr2:
+          type: string
+          description: 住所2
+        Adr3:
+          type: string
+          description: 住所3
+        Adr4:
+          type: string
+          nullable: true
+          description: 住所4
+        Adr5:
+          type: string
+          nullable: true
+          description: 住所5
+        Adr6:
+          type: string
+          nullable: true
+          description: 住所6
+        TelNo:
+          type: string
+          description: 電話番号
+        CustKanjiName:
+          type: string
+          description: 顧客漢字名
+        CustKanaName:
+          type: string
+          description: 顧客カナ名
+        ClientZipNo:
+          type: string
+          description: 依頼者郵便番号
+        ClientAdr1:
+          type: string
+          description: 依頼者住所1
+        ClientAdr2:
+          type: string
+          description: 依頼者住所2
+        ClientAdr3:
+          type: string
+          description: 依頼者住所3
+        ClientAdr4:
+          type: string
+          nullable: true
+          description: 依頼者住所4
+        ClientAdr5:
+          type: string
+          nullable: true
+          description: 依頼者住所5
+        ClientAdr6:
+          type: string
+          nullable: true
+          description: 依頼者住所6
+        ClientTelNo:
+          type: string
+          description: 依頼者電話番号
+        ClientKanjiName:
+          type: string
+          description: 依頼者漢字名
+        ClientKanaName:
+          type: string
+          description: 依頼者カナ名
+        ClientCorpName:
+          type: string
+          nullable: true
+          description: 依頼者会社名
+        DestZipNo:
+          type: string
+          description: 配送先郵便番号
+        DestAdr1:
+          type: string
+          description: 配送先住所1
+        DestAdr2:
+          type: string
+          description: 配送先住所2
+        DestAdr3:
+          type: string
+          description: 配送先住所3
+        DestAdr4:
+          type: string
+          nullable: true
+          description: 配送先住所4
+        DestAdr5:
+          type: string
+          nullable: true
+          description: 配送先住所5
+        DestAdr6:
+          type: string
+          nullable: true
+          description: 配送先住所6
+        DestTelNo:
+          type: string
+          description: 配送先電話番号
+        DestKanjiName:
+          type: string
+          description: 配送先漢字名
+        DestKanaName:
+          type: string
+          description: 配送先カナ名
+        DestCorpName:
+          type: string
+          nullable: true
+          description: 配送先会社名
+        DlvAppointedDate:
+          type: string
+          format: date
+          nullable: true
+          description: 配送指定日
+        DlvAppointedTimePerDlvCorpKbn:
+          type: string
+          nullable: true
+          description: 配送会社別配送指定時間区分
+        DlvAppointedTimePerDlvCorpName:
+          type: string
+          nullable: true
+          description: 配送会社別配送指定時間名
+        DlvCorpDetailKbn:
+          type: string
+          nullable: true
+          description: 配送会社詳細区分
+        ArrivedShopNo1:
+          type: string
+          nullable: true
+          description: 到着店舗番号1
+        ArrivedShopNo2:
+          type: string
+          nullable: true
+          description: 到着店舗番号2
+        LiquidationShopNo1:
+          type: string
+          nullable: true
+          description: 清算店舗番号1
+        LiquidationShopNo2:
+          type: string
+          nullable: true
+          description: 清算店舗番号2
+        DlvInstructionComment:
+          type: string
+          nullable: true
+          description: 配送指示コメント
+        SentenceKbn1:
+          type: string
+          nullable: true
+          description: 文章区分1
+        SentenceCd1:
+          type: string
+          nullable: true
+          description: 文章コード1
+        SentenceKbn2:
+          type: string
+          nullable: true
+          description: 文章区分2
+        SentenceCd2:
+          type: string
+          nullable: true
+          description: 文章コード2
+        CustServiceRankName:
+          type: string
+          nullable: true
+          description: 顧客サービスランク名
+        UseEnablePoint:
+          type: number
+          nullable: true
+          description: 利用可能ポイント
+        UsePoint:
+          type: number
+          nullable: true
+          description: 利用ポイント
+        OccurSchedulePoint:
+          type: number
+          nullable: true
+          description: 発生予定ポイント
+        UseSchedulePoint:
+          type: number
+          nullable: true
+          description: 利用予定ポイント
+        CampainPoint:
+          type: number
+          nullable: true
+          description: キャンペーンポイント
+        TotalPoint:
+          type: number
+          nullable: true
+          description: 合計ポイント
+        LapseNextMonth:
+          type: number
+          nullable: true
+          description: 翌月失効
+        LapseNextMonthPoint:
+          type: number
+          nullable: true
+          description: 翌月失効ポイント
+        LapseNextMonth2:
+          type: number
+          nullable: true
+          description: 翌月失効2
+        LapseNextMonthPoint2:
+          type: number
+          nullable: true
+          description: 翌月失効ポイント2
+        NextDlvDate:
+          type: string
+          format: date
+          nullable: true
+          description: 次回配送日
+        NextDlvItemCd1:
+          type: string
+          nullable: true
+          description: 次回配送商品コード1
+        NextDlvSalesCommodityName1:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名1
+        NextDlvShipmentQty1:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量1
+        NextDlvCommoditySalesMethodName1:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名1
+        NextDlvOrderCommodityYen1:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額1
+        NextDlvItemCd2:
+          type: string
+          nullable: true
+          description: 次回配送商品コード2
+        NextDlvSalesCommodityName2:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名2
+        NextDlvShipmentQty2:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量2
+        NextDlvCommoditySalesMethodName2:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名2
+        NextDlvOrderCommodityYen2:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額2
+        NextDlvItemCd3:
+          type: string
+          nullable: true
+          description: 次回配送商品コード3
+        NextDlvSalesCommodityName3:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名3
+        NextDlvShipmentQty3:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量3
+        NextDlvCommoditySalesMethodName3:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名3
+        NextDlvOrderCommodityYen3:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額3
+        NextDlvItemCd4:
+          type: string
+          nullable: true
+          description: 次回配送商品コード4
+        NextDlvSalesCommodityName4:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名4
+        NextDlvShipmentQty4:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量4
+        NextDlvCommoditySalesMethodName4:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名4
+        NextDlvOrderCommodityYen4:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額4
+        NextDlvItemCd5:
+          type: string
+          nullable: true
+          description: 次回配送商品コード5
+        NextDlvSalesCommodityName5:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名5
+        NextDlvShipmentQty5:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量5
+        NextDlvCommoditySalesMethodName5:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名5
+        NextDlvOrderCommodityYen5:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額5
+        NextDlvItemCd6:
+          type: string
+          nullable: true
+          description: 次回配送商品コード6
+        NextDlvSalesCommodityName6:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名6
+        NextDlvShipmentQty6:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量6
+        NextDlvCommoditySalesMethodName6:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名6
+        NextDlvOrderCommodityYen6:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額6
+        NextDlvItemCd7:
+          type: string
+          nullable: true
+          description: 次回配送商品コード7
+        NextDlvSalesCommodityName7:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名7
+        NextDlvShipmentQty7:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量7
+        NextDlvCommoditySalesMethodName7:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名7
+        NextDlvOrderCommodityYen7:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額7
+        NextDlvItemCd8:
+          type: string
+          nullable: true
+          description: 次回配送商品コード8
+        NextDlvSalesCommodityName8:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名8
+        NextDlvShipmentQty8:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量8
+        NextDlvCommoditySalesMethodName8:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名8
+        NextDlvOrderCommodityYen8:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額8
+        NextDlvItemCd9:
+          type: string
+          nullable: true
+          description: 次回配送商品コード9
+        NextDlvSalesCommodityName9:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名9
+        NextDlvShipmentQty9:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量9
+        NextDlvCommoditySalesMethodName9:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名9
+        NextDlvOrderCommodityYen9:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額9
+        NextDlvItemCd10:
+          type: string
+          nullable: true
+          description: 次回配送商品コード10
+        NextDlvSalesCommodityName10:
+          type: string
+          nullable: true
+          description: 次回配送販売商品名10
+        NextDlvShipmentQty10:
+          type: number
+          nullable: true
+          description: 次回配送出荷数量10
+        NextDlvCommoditySalesMethodName10:
+          type: string
+          nullable: true
+          description: 次回配送商品販売方法名10
+        NextDlvOrderCommodityYen10:
+          type: number
+          nullable: true
+          description: 次回配送注文商品金額10
+        SentenceKbn3:
+          type: string
+          nullable: true
+          description: 文章区分3
+        SentenceCd3:
+          type: string
+          nullable: true
+          description: 文章コード3
+        SentenceKbn4:
+          type: string
+          nullable: true
+          description: 文章区分4
+        SentenceCd4:
+          type: string
+          nullable: true
+          description: 文章コード4
+        DataCreateDate:
+          type: string
+          format: date-time
+          nullable: true
+          description: データ作成日時
+        ExtKbnName:
+          type: string
+          nullable: true
+          description: 拡張区分名
+        InspectMemo:
+          type: string
+          nullable: true
+          description: 検査メモ
+        OCRCd:
+          type: string
+          nullable: true
+          description: OCRコード
+        EAN128Cd:
+          type: string
+          nullable: true
+          description: EAN128コード
+        PayDeadlineDate:
+          type: string
+          format: date
+          nullable: true
+          description: 支払期限日
+        OrderPriceCutYen:
+          type: number
+          nullable: true
+          description: 注文価格カット金額
+        ReportScheduleDate:
+          type: string
+          format: date
+          nullable: true
+          description: レポート予定日
+        PointLapseScheduleDate:
+          type: string
+          format: date
+          nullable: true
+          description: ポイント失効予定日
+        PointLapseSchedulePoint:
+          type: number
+          nullable: true
+          description: ポイント失効予定ポイント
+        RankEndDate:
+          type: string
+          format: date
+          nullable: true
+          description: ランク終了日
+        SaleYenYear:
+          type: number
+          nullable: true
+          description: 年間売上金額
+        PointOccurComment:
+          type: string
+          nullable: true
+          description: ポイント発生コメント
+        DestJISCd:
+          type: string
+          nullable: true
+          description: 配送先JISコード
+        NextDlvCharge:
+          type: number
+          nullable: true
+          description: 次回配送手数料
+        PurchaseListKbn:
+          type: integer
+          nullable: true
+          description: 購入リスト区分
+        RankJudgeTotalSalesYen:
+          type: number
+          nullable: true
+          description: ランク判定合計売上金額
+        PromoCd:
+          type: string
+          nullable: true
+          description: プロモーションコード
+        PromoName:
+          type: string
+          nullable: true
+          description: プロモーション名
+        TaxRateKbn:
+          type: integer
+          nullable: true
+          description: 税率区分
+        TaxTaxKbn:
+          type: integer
+          nullable: true
+          description: 税税区分
+        DlvCorpAppointedKbn:
+          type: integer
+          nullable: true
+          description: 配送会社指定区分
+        YobiKbn:
+          type: integer
+          nullable: true
+          description: 予備区分
+        RepeatCustFlg:
+          type: integer
+          nullable: true
+          description: リピート顧客フラグ
+        StandardUsePointTax:
+          type: number
+          nullable: true
+          description: 標準利用ポイント税額
+        StandardDiffTax:
+          type: number
+          nullable: true
+          description: 標準差額税額
+        ReducedUsePoint:
+          type: number
+          nullable: true
+          description: 軽減利用ポイント
+        ReducedUsePointTax:
+          type: number
+          nullable: true
+          description: 軽減利用ポイント税額
+        ReducedDiffYen:
+          type: number
+          nullable: true
+          description: 軽減差額金額
+        ReducedDiffTax:
+          type: number
+          nullable: true
+          description: 軽減差額税額
+        ReducedTaxRateFlg:
+          type: integer
+          nullable: true
+          description: 軽減税率フラグ
+        StandardOrderYen:
+          type: number
+          nullable: true
+          description: 標準注文金額
+        StandardOrderTax:
+          type: number
+          nullable: true
+          description: 標準注文税額
+        ReducedOrderYen:
+          type: number
+          nullable: true
+          description: 軽減注文金額
+        ReducedOrderTax:
+          type: number
+          nullable: true
+          description: 軽減注文税額
+      required:
+        - DataKbn
+        - UpdateKbn
+        - ShipmentKbn
+        - ShipmentNo
+        - ShipmentLineSeq
+        - ItemCd
+        - SalesCommodityName
+        - ShipmentQty
+    ShipmentDataArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/ShipmentData'
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: エラーメッセージ
+        code:
+          type: string
+          description: エラーコード
+        details:
+          type: string
+          description: エラーの詳細情報
+      required:
+        - error
+        - code

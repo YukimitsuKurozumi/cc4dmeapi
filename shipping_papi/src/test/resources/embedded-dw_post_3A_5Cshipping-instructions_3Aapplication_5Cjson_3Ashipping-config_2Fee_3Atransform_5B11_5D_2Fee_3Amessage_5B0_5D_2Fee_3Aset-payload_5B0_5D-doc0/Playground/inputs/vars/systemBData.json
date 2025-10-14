@@ -1,8 +1,8 @@
 {
-  "targetSystem": "libero",
+  "targetSystem": "dolor",
   "processingInstructions": {
-    "autoProcess": true,
+    "autoProcess": false,
     "generateLabel": true,
-    "updateInventory": true
+    "updateInventory": false
   }
 }

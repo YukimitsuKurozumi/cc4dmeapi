@@ -1,8 +1,8 @@
 {
-  "carrier": "amet",
-  "apiEndpoint": "dolor",
-  "authToken": "venenatis",
-  "serviceType": "felis",
+  "carrier": "faucibus",
+  "apiEndpoint": "lorem",
+  "authToken": "dictum",
+  "serviceType": "eros",
   "trackingEnabled": true,
-  "signatureRequired": true
+  "signatureRequired": false
 }

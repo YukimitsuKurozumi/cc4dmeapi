@@ -1,8 +1,8 @@
 {
-  "carrier": "ac",
-  "apiEndpoint": "Nam",
-  "authToken": "eget",
+  "carrier": "Nunc",
+  "apiEndpoint": "libero",
+  "authToken": "Fusce",
   "serviceType": "dui",
-  "trackingEnabled": false,
-  "signatureRequired": true
+  "trackingEnabled": true,
+  "signatureRequired": false
 }
