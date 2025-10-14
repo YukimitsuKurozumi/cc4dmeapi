@@ -53,7 +53,8 @@
         </pluginRepository>
     </pluginRepositories>
     <dependencies>
-        <dependency>
+        <!-- Temporarily disabled for testing -->
+        <!-- <dependency>
             <groupId>5733abe5-08b6-4bb3-a0ae-fd462d88c02a</groupId>
             <artifactId>wmssapi</artifactId>
             <version>1.1.0</version>
@@ -65,7 +66,7 @@
             <artifactId>mule-apikit-module</artifactId>
             <version>1.11.7</version>
             <classifier>mule-plugin</classifier>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-http-connector</artifactId>
@@ -76,6 +77,12 @@
             <groupId>org.mule.connectors</groupId>
             <artifactId>mule-file-connector</artifactId>
             <version>1.5.4</version>
+            <classifier>mule-plugin</classifier>
+        </dependency>
+        <dependency>
+            <groupId>org.mule.connectors</groupId>
+            <artifactId>mule-sftp-connector</artifactId>
+            <version>2.0.4</version>
             <classifier>mule-plugin</classifier>
         </dependency>
     </dependencies>
