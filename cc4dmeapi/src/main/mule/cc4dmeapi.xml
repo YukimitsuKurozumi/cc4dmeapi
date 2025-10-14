@@ -1,17 +1,10 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
-<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core"
-	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
-http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
-http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
-	
-	<file:config name="File_Config" doc:name="File Config" doc:id="8ccaf83a-3211-4891-bd00-ccbe3935fb16" />
-	
-	<file:matcher name="csvFileMatcher" doc:name="CSV File Matcher" doc:id="csv-matcher" 
-		filenamePattern="IFIDC0006_*.csv" />
-	
-	<flow name="cc4dmeapiFlow" doc:id="cebf8f3b-2c03-49a3-a3ea-49f9e9a41976" >
+<mule xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd">
+    <file:config doc:id="8ccaf83a-3211-4891-bd00-ccbe3935fb16" doc:name="File Config" name="File_Config"></file:config>
+    <file:matcher doc:id="csv-matcher" doc:name="CSV File Matcher" filenamePattern="IFIDC0006_*.csv" name="csvFileMatcher"></file:matcher>
+    <http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="b8c9a8e1-4f2d-4c8a-9b1e-2f3d4e5f6a7b">
+        <http:request-connection host="shipping-papi.jp-e1.cloudhub.io" port="80" protocol="HTTP"/>
+    </http:request-config>
+    <flow doc:id="cebf8f3b-2c03-49a3-a3ea-49f9e9a41976" name="cc4dmeapiFlow">
 		<file:listener doc:name="CSV File Listener" doc:id="2a276403-aef5-4f05-aaa0-1e0fc0402055" 
 			config-ref="File_Config" 
 			directory="/Users/ykurozumi/test_data/input" 
@@ -21,220 +14,302 @@ http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/
 				<fixed-frequency frequency="10" timeUnit="SECONDS"/>
 			</scheduling-strategy>
 		</file:listener>
-
-		<logger level="INFO" doc:name="Log File Processing Start" doc:id="log-start" 
-			message="Processing CSV file: #[attributes.fileName]"/>
-		<ee:transform doc:name="Transform Message" doc:id="78d34b4d-f08a-4f52-a26b-da69b4dbd245" >
-			<ee:message >
-				<ee:set-payload ><![CDATA[%dw 2.0
-output application/json
+        <logger doc:id="log-start" doc:name="Log File Processing Start" level="INFO" message="Processing CSV file: #[attributes.fileName]"></logger>
+        
+        <!-- Store original file attributes for later use -->
+        <set-variable doc:id="store-filename" doc:name="Store File Name" variableName="originalFileName" value="#[attributes.fileName]"/>
+        
+        <ee:transform doc:id="78d34b4d-f08a-4f52-a26b-da69b4dbd245" doc:name="Store CSV Data">
+            <ee:message>
+                <ee:set-payload><![CDATA[%dw 2.0
+output application/java
 ---
-payload map ( payload01 , indexOfPayload01 ) -> {
-	DlvInstructionComment: payload01.DlvInstructionComment,
-	Lot1: payload01.Lot1,
-	Lot2: payload01.Lot2,
-	WrappingFee: payload01.WrappingFee,
-	EAN128Cd: payload01.EAN128Cd,
-	UpdateKbn: payload01.UpdateKbn as Number,
-	ArrivalLineNo: payload01.ArrivalLineNo,
-	LapseNextMonth2: payload01.LapseNextMonth2,
-	NextDlvCommoditySalesMethodName10: payload01.NextDlvCommoditySalesMethodName10,
-	UseEnablePoint: payload01.UseEnablePoint,
-	InspectMemo: payload01.InspectMemo,
-	DlvCorpAppointedKbn: payload01.DlvCorpAppointedKbn,
-	DestAdr1: payload01.DestAdr1,
-	TaxTaxKbn: payload01.TaxTaxKbn,
-	DestAdr2: payload01.DestAdr2,
-	DestAdr3: payload01.DestAdr3,
-	DestAdr4: payload01.DestAdr4,
-	DlvBaseKbn: payload01.DlvBaseKbn,
-	NextDlvSalesCommodityName10: payload01.NextDlvSalesCommodityName10,
-	DataCreateDate: payload01.DataCreateDate,
-	ExtKbnName: payload01.ExtKbnName,
-	LapseNextMonth: payload01.LapseNextMonth,
-	DestAdr5: payload01.DestAdr5,
-	DestAdr6: payload01.DestAdr6,
-	CustKanaName: payload01.CustKanaName,
-	NextDlvItemCd2: payload01.NextDlvItemCd2,
-	DestCorpName: payload01.DestCorpName,
-	NextDlvItemCd1: payload01.NextDlvItemCd1,
-	NextDlvItemCd4: payload01.NextDlvItemCd4,
-	DeliveryScheDate: payload01.DeliveryScheDate,
-	ChargeTax: payload01.ChargeTax as Number,
-	NextDlvItemCd3: payload01.NextDlvItemCd3,
-	NextDlvItemCd6: payload01.NextDlvItemCd6,
-	NextDlvItemCd5: payload01.NextDlvItemCd5,
-	NextDlvItemCd8: payload01.NextDlvItemCd8,
-	OrderReceiptDate: payload01.OrderReceiptDate,
-	OccurSchedulePoint: payload01.OccurSchedulePoint,
-	NextDlvItemCd7: payload01.NextDlvItemCd7,
-	NextDlvItemCd9: payload01.NextDlvItemCd9,
-	ReducedDiffYen: payload01.ReducedDiffYen,
-	TotalPoint: payload01.TotalPoint,
-	ShipmentLineNo: payload01.ShipmentLineNo,
-	PurchaseListKbn: payload01.PurchaseListKbn,
-	StandardOrderYen: payload01.StandardOrderYen,
-	DestKanaName: payload01.DestKanaName,
-	NextDlvShipmentQty10: payload01.NextDlvShipmentQty10,
-	ReducedUsePointTax: payload01.ReducedUsePointTax,
-	ShippingTax: payload01.ShippingTax as Number,
-	UsePoint: payload01.UsePoint,
-	NextDlvSalesCommodityName9: payload01.NextDlvSalesCommodityName9,
-	DlvAppointedDate: payload01.DlvAppointedDate,
-	NextDlvSalesCommodityName8: payload01.NextDlvSalesCommodityName8,
-	NextDlvSalesCommodityName7: payload01.NextDlvSalesCommodityName7,
-	NextDlvSalesCommodityName6: payload01.NextDlvSalesCommodityName6,
-	NextDlvSalesCommodityName5: payload01.NextDlvSalesCommodityName5,
-	NextDlvSalesCommodityName4: payload01.NextDlvSalesCommodityName4,
-	ClientZipNo: payload01.ClientZipNo,
-	NextDlvSalesCommodityName3: payload01.NextDlvSalesCommodityName3,
-	SetShipmentQty: payload01.SetShipmentQty,
-	NextDlvSalesCommodityName2: payload01.NextDlvSalesCommodityName2,
-	NextDlvSalesCommodityName1: payload01.NextDlvSalesCommodityName1,
-	UseSchedulePoint: payload01.UseSchedulePoint,
-	WrappingServiceName: payload01.WrappingServiceName,
-	SetSalesCommodityName: payload01.SetSalesCommodityName,
-	ArrivedShopNo2: payload01.ArrivedShopNo2,
-	CustServiceRankName: payload01.CustServiceRankName,
-	ArrivedShopNo1: payload01.ArrivedShopNo1,
-	NextDlvItemCd10: payload01.NextDlvItemCd10,
-	ShipmentRequestDate: payload01.ShipmentRequestDate,
-	DLVOutForGIFTKbn: payload01.DLVOutForGIFTKbn,
-	NextDlvCharge: payload01.NextDlvCharge,
-	DestJISCd: payload01.DestJISCd,
-	DlvAppointedTimePerDlvCorpKbn: payload01.DlvAppointedTimePerDlvCorpKbn,
-	ShipmentNo: payload01.ShipmentNo,
-	CustNo: payload01.CustNo,
-	PointOccurComment: payload01.PointOccurComment,
-	ReducedUsePoint: payload01.ReducedUsePoint,
-	AdvancedYen: payload01.AdvancedYen as Number,
-	LapseNextMonthPoint2: payload01.LapseNextMonthPoint2,
-	PromoCd: payload01.PromoCd,
-	ClientTelNo: payload01.ClientTelNo,
-	ArrivalNo: payload01.ArrivalNo,
-	SetCommodityKbn: payload01.SetCommodityKbn,
-	NextDlvShipmentQty4: payload01.NextDlvShipmentQty4,
-	NextDlvShipmentQty3: payload01.NextDlvShipmentQty3,
-	ReducedOrderTax: payload01.ReducedOrderTax,
-	DlvCorpDetailKbn: payload01.DlvCorpDetailKbn,
-	NextDlvShipmentQty2: payload01.NextDlvShipmentQty2,
-	NextDlvShipmentQty1: payload01.NextDlvShipmentQty1,
-	NextDlvShipmentQty8: payload01.NextDlvShipmentQty8,
-	NextDlvShipmentQty7: payload01.NextDlvShipmentQty7,
-	NextDlvShipmentQty6: payload01.NextDlvShipmentQty6,
-	ReportScheduleDate: payload01.ReportScheduleDate,
-	TaxRateKbn: payload01.TaxRateKbn,
-	ZipNo: payload01.ZipNo,
-	NextDlvShipmentQty5: payload01.NextDlvShipmentQty5,
-	OCRCd: payload01.OCRCd,
-	NextDlvOrderCommodityYen2: payload01.NextDlvOrderCommodityYen2,
-	NextDlvOrderCommodityYen3: payload01.NextDlvOrderCommodityYen3,
-	SentenceKbn4: payload01.SentenceKbn4,
-	NextDlvOrderCommodityYen1: payload01.NextDlvOrderCommodityYen1,
-	NextDlvShipmentQty9: payload01.NextDlvShipmentQty9,
-	NextDlvOrderCommodityYen6: payload01.NextDlvOrderCommodityYen6,
-	ClientAdr6: payload01.ClientAdr6,
-	NextDlvOrderCommodityYen7: payload01.NextDlvOrderCommodityYen7,
-	ClientAdr5: payload01.ClientAdr5,
-	NextDlvOrderCommodityYen4: payload01.NextDlvOrderCommodityYen4,
-	ClientAdr4: payload01.ClientAdr4,
-	NextDlvOrderCommodityYen5: payload01.NextDlvOrderCommodityYen5,
-	StandardOrderTax: payload01.StandardOrderTax,
-	ClientAdr3: payload01.ClientAdr3,
-	OrderPriceCutYen: payload01.OrderPriceCutYen,
-	ClientAdr2: payload01.ClientAdr2,
-	ClientAdr1: payload01.ClientAdr1,
-	NextDlvOrderCommodityYen8: payload01.NextDlvOrderCommodityYen8,
-	NextDlvOrderCommodityYen9: payload01.NextDlvOrderCommodityYen9,
-	SaleYenYear: payload01.SaleYenYear,
-	CustKanjiName: payload01.CustKanjiName,
-	ShopCd: payload01.ShopCd,
-	Adr6: payload01.Adr6,
-	Adr5: payload01.Adr5,
-	Adr4: payload01.Adr4,
-	PayDeadlineDate: payload01.PayDeadlineDate,
-	OrderCommodityYen: payload01.OrderCommodityYen as Number,
-	Adr3: payload01.Adr3,
-	Adr2: payload01.Adr2,
-	Adr1: payload01.Adr1,
-	StandardDiffTax: payload01.StandardDiffTax,
-	WrappingFeeTax: payload01.WrappingFeeTax,
-	NextDlvOrderCommodityYen10: payload01.NextDlvOrderCommodityYen10,
-	DestKanjiName: payload01.DestKanjiName,
-	ShopOrderDate: payload01.ShopOrderDate,
-	PromoName: payload01.PromoName,
-	DestZipNo: payload01.DestZipNo,
-	DestTelNo: payload01.DestTelNo,
-	ShipmentQty: payload01.ShipmentQty as Number,
-	RepeatCustFlg: payload01.RepeatCustFlg,
-	DiscountYen: payload01.DiscountYen as Number,
-	SetOrderCommodityTax: payload01.SetOrderCommodityTax,
-	YobiKbn: payload01.YobiKbn,
-	SetDiscountYen: payload01.SetDiscountYen,
-	NextDlvCommoditySalesMethodName9: payload01.NextDlvCommoditySalesMethodName9,
-	NextDlvCommoditySalesMethodName8: payload01.NextDlvCommoditySalesMethodName8,
-	NextDlvCommoditySalesMethodName7: payload01.NextDlvCommoditySalesMethodName7,
-	RankEndDate: payload01.RankEndDate,
-	NextDlvCommoditySalesMethodName6: payload01.NextDlvCommoditySalesMethodName6,
-	CreditCardCorpCd: payload01.CreditCardCorpCd,
-	CreateBy: payload01.CreateBy,
-	ReducedOrderYen: payload01.ReducedOrderYen,
-	SetItemCd: payload01.SetItemCd,
-	SentenceCd4: payload01.SentenceCd4,
-	PointLapseSchedulePoint: payload01.PointLapseSchedulePoint,
-	ReducedDiffTax: payload01.ReducedDiffTax,
-	PayMethodKbn: payload01.PayMethodKbn,
-	SalesPrice: payload01.SalesPrice as Number,
-	SentenceCd1: payload01.SentenceCd1,
-	SentenceCd2: payload01.SentenceCd2,
-	TelNo: payload01.TelNo,
-	SentenceCd3: payload01.SentenceCd3,
-	OrderCommodityTax: payload01.OrderCommodityTax as Number,
-	LiquidationShopNo2: payload01.LiquidationShopNo2,
-	ItemCd: payload01.ItemCd,
-	LiquidationShopNo1: payload01.LiquidationShopNo1,
-	NextDlvCommoditySalesMethodName1: payload01.NextDlvCommoditySalesMethodName1,
-	DlvAppointedTimePerDlvCorpName: payload01.DlvAppointedTimePerDlvCorpName,
-	Shipping: payload01.Shipping as Number,
-	NextDlvCommoditySalesMethodName5: payload01.NextDlvCommoditySalesMethodName5,
-	NextDlvCommoditySalesMethodName4: payload01.NextDlvCommoditySalesMethodName4,
-	NextDlvCommoditySalesMethodName3: payload01.NextDlvCommoditySalesMethodName3,
-	ClientKanaName: payload01.ClientKanaName,
-	NextDlvCommoditySalesMethodName2: payload01.NextDlvCommoditySalesMethodName2,
-	SalesCommodityName: payload01.SalesCommodityName,
-	SetSalesPrice: payload01.SetSalesPrice,
-	StaffSalesFlg: payload01.StaffSalesFlg,
-	SetOrderCommodityYen: payload01.SetOrderCommodityYen,
-	CampainPoint: payload01.CampainPoint,
-	ShipmentKbn: payload01.ShipmentKbn as Number,
-	Charge: payload01.Charge default 0 as Number,
-	LapseNextMonthPoint: payload01.LapseNextMonthPoint,
-	DlvCorpCd: payload01.DlvCorpCd,
-	StandardUsePointTax: payload01.StandardUsePointTax,
-	RankJudgeTotalSalesYen: payload01.RankJudgeTotalSalesYen,
-	ClientKanjiName: payload01.ClientKanjiName,
-	DataKbn: payload01.DataKbn as Number,
-	ShipmentLineSeq: payload01.ShipmentLineSeq as Number,
-	ClientCorpName: payload01.ClientCorpName,
-	SentenceKbn2: payload01.SentenceKbn2,
-	SentenceKbn3: payload01.SentenceKbn3,
-	SentenceKbn1: payload01.SentenceKbn1,
-	PointLapseScheduleDate: payload01.PointLapseScheduleDate,
-	ReducedTaxRateFlg: payload01.ReducedTaxRateFlg,
-	NextDlvDate: payload01.NextDlvDate
+payload]]></ee:set-payload>
+            </ee:message>
+        </ee:transform>
+        
+        <logger doc:id="log-record-count" doc:name="Log Record Count" level="INFO" message="Processing #[sizeOf(payload)] CSV records"/>
+        
+        <!-- Loop through each CSV record -->
+        <foreach doc:id="foreach-csv-records" doc:name="For Each CSV Record" collection="#[payload]">
+            <logger doc:id="log-processing-record" doc:name="Log Processing Record" level="INFO" message="Processing record: #[payload.ShipmentNo]"/>
+            
+            <!-- Transform single CSV record to JSON format for Shipping API -->
+            <ee:transform doc:id="transform-single-record" doc:name="Transform Single Record">
+                <ee:message>
+                    <ee:set-payload><![CDATA[%dw 2.0
+output application/json
+fun nullIfEmpty(value) = if (isEmpty(value) or value == "" or value == null) null else value
+fun toNumber(value) = 
+    if (isEmpty(value) or value == "" or value == null) 
+        null 
+    else (
+        // Check if the value looks like a datetime string and return null if so
+        if (value is String and ((value contains "/") and (value contains ":")) or ((value contains "-") and (value contains "T")))
+            null
+        else
+            (value as Number)
+    )
+fun toString(value) = if (isEmpty(value) or value == null) null else (value as String)
+fun formatDate(dateValue) = 
+    if (isEmpty(dateValue) or dateValue == "" or dateValue == null) 
+        null 
+    else (
+        // 数値または文字列のYYYYMMDD形式をYYYY-MM-DD形式に変換
+        do {
+            var dateStr = toString(dateValue)
+            ---
+            if (dateStr != null and sizeOf(dateStr) == 8)
+                dateStr[0 to 3] ++ "-" ++ dateStr[4 to 5] ++ "-" ++ dateStr[6 to 7]
+            else
+                null // 不正な形式の場合はnull
+        }
+    )
+fun formatDateTime(dateTimeStr) = 
+    if (isEmpty(dateTimeStr) or dateTimeStr == "" or dateTimeStr == null) 
+        null 
+    else (
+        // YYYY/MM/DD HH:MM形式をISO 8601形式に変換
+        do {
+            var cleanStr = toString(dateTimeStr)
+            ---
+            if (cleanStr != null and (cleanStr contains "/") and (cleanStr contains " ") and (cleanStr contains ":"))
+                (cleanStr replace "/" with "-" replace " " with "T") ++ ":00"
+            else
+                null // 不正な形式の場合はnull
+        }
+    )
+fun validateRequired(value, fieldName) = 
+    if (isEmpty(value) or value == "" or value == null)
+        error("Required field '" ++ fieldName ++ "' is missing or empty")
+    else
+        value
+fun validateRequiredNumber(value, fieldName) = 
+    if (isEmpty(value) or value == "" or value == null)
+        error("Required field '" ++ fieldName ++ "' is missing or empty")
+    else
+        toNumber(value)
+fun validateRequiredString(value, fieldName) = 
+    if (isEmpty(value) or value == "" or value == null)
+        error("Required field '" ++ fieldName ++ "' is missing or empty")
+    else
+        toString(value)
+---
+{
+	// 整数型フィールド (Shipping APIでintegerとして定義されているフィールド)
+	// 必須フィールドの検証
+	DataKbn: validateRequiredNumber(payload.DataKbn, "DataKbn"),
+	UpdateKbn: validateRequiredNumber(payload.UpdateKbn, "UpdateKbn"),
+	ShipmentKbn: validateRequiredNumber(payload.ShipmentKbn, "ShipmentKbn"),
+	DlvBaseKbn: toNumber(payload.DlvBaseKbn),
+	ShipmentLineSeq: validateRequiredNumber(payload.ShipmentLineSeq, "ShipmentLineSeq"),
+	SetCommodityKbn: toNumber(payload.SetCommodityKbn),
+	ShipmentQty: validateRequiredNumber(payload.ShipmentQty, "ShipmentQty"),
+	SalesPrice: toNumber(payload.SalesPrice),
+	OrderCommodityYen: toNumber(payload.OrderCommodityYen),
+	DiscountYen: toNumber(payload.DiscountYen),
+	OrderCommodityTax: toNumber(payload.OrderCommodityTax),
+	WrappingFee: toNumber(payload.WrappingFee),
+	WrappingFeeTax: toNumber(payload.WrappingFeeTax),
+	SetShipmentQty: toNumber(payload.SetShipmentQty),
+	SetSalesPrice: toNumber(payload.SetSalesPrice),
+	SetOrderCommodityYen: toNumber(payload.SetOrderCommodityYen),
+	SetDiscountYen: toNumber(payload.SetDiscountYen),
+	SetOrderCommodityTax: toNumber(payload.SetOrderCommodityTax),
+	Charge: toNumber(payload.Charge),
+	ChargeTax: toNumber(payload.ChargeTax),
+	Shipping: toNumber(payload.Shipping),
+	ShippingTax: toNumber(payload.ShippingTax),
+	AdvancedYen: toNumber(payload.AdvancedYen),
+	StaffSalesFlg: toNumber(payload.StaffSalesFlg),
+	PayMethodKbn: toNumber(payload.PayMethodKbn),
+	DLVOutForGIFTKbn: toNumber(payload.DLVOutForGIFTKbn),
+	UseEnablePoint: toNumber(payload.UseEnablePoint),
+	UsePoint: toNumber(payload.UsePoint),
+	OccurSchedulePoint: toNumber(payload.OccurSchedulePoint),
+	UseSchedulePoint: toNumber(payload.UseSchedulePoint),
+	CampainPoint: toNumber(payload.CampainPoint),
+	TotalPoint: toNumber(payload.TotalPoint),
+	LapseNextMonth: toNumber(payload.LapseNextMonth),
+	LapseNextMonthPoint: toNumber(payload.LapseNextMonthPoint),
+	LapseNextMonth2: toNumber(payload.LapseNextMonth2),
+	LapseNextMonthPoint2: toNumber(payload.LapseNextMonthPoint2),
+	NextDlvShipmentQty1: toNumber(payload.NextDlvShipmentQty1),
+	NextDlvOrderCommodityYen1: toNumber(payload.NextDlvOrderCommodityYen1),
+	NextDlvShipmentQty2: toNumber(payload.NextDlvShipmentQty2),
+	NextDlvOrderCommodityYen2: toNumber(payload.NextDlvOrderCommodityYen2),
+	NextDlvShipmentQty3: toNumber(payload.NextDlvShipmentQty3),
+	NextDlvOrderCommodityYen3: toNumber(payload.NextDlvOrderCommodityYen3),
+	NextDlvShipmentQty4: toNumber(payload.NextDlvShipmentQty4),
+	NextDlvOrderCommodityYen4: toNumber(payload.NextDlvOrderCommodityYen4),
+	NextDlvShipmentQty5: toNumber(payload.NextDlvShipmentQty5),
+	NextDlvOrderCommodityYen5: toNumber(payload.NextDlvOrderCommodityYen5),
+	NextDlvShipmentQty6: toNumber(payload.NextDlvShipmentQty6),
+	NextDlvOrderCommodityYen6: toNumber(payload.NextDlvOrderCommodityYen6),
+	NextDlvShipmentQty7: toNumber(payload.NextDlvShipmentQty7),
+	NextDlvOrderCommodityYen7: toNumber(payload.NextDlvOrderCommodityYen7),
+	NextDlvShipmentQty8: toNumber(payload.NextDlvShipmentQty8),
+	NextDlvOrderCommodityYen8: toNumber(payload.NextDlvOrderCommodityYen8),
+	NextDlvShipmentQty9: toNumber(payload.NextDlvShipmentQty9),
+	NextDlvOrderCommodityYen9: toNumber(payload.NextDlvOrderCommodityYen9),
+	NextDlvShipmentQty10: toNumber(payload.NextDlvShipmentQty10),
+	NextDlvOrderCommodityYen10: toNumber(payload.NextDlvOrderCommodityYen10),
+	OrderPriceCutYen: toNumber(payload.OrderPriceCutYen),
+	PointLapseSchedulePoint: toNumber(payload.PointLapseSchedulePoint),
+	SaleYenYear: toNumber(payload.SaleYenYear),
+	NextDlvCharge: toNumber(payload.NextDlvCharge),
+	PurchaseListKbn: toNumber(payload.PurchaseListKbn),
+	RankJudgeTotalSalesYen: toNumber(payload.RankJudgeTotalSalesYen),
+	TaxRateKbn: toNumber(payload.TaxRateKbn),
+	TaxTaxKbn: toNumber(payload.TaxTaxKbn),
+	DlvCorpAppointedKbn: toNumber(payload.DlvCorpAppointedKbn),
+	RepeatCustFlg: toNumber(payload.RepeatCustFlg),
+	StandardUsePointTax: toNumber(payload.StandardUsePointTax),
+	StandardDiffTax: toNumber(payload.StandardDiffTax),
+	ReducedUsePoint: toNumber(payload.ReducedUsePoint),
+	ReducedUsePointTax: toNumber(payload.ReducedUsePointTax),
+	ReducedDiffYen: toNumber(payload.ReducedDiffYen),
+	ReducedDiffTax: toNumber(payload.ReducedDiffTax),
+	ReducedTaxRateFlg: toNumber(payload.ReducedTaxRateFlg),
+	StandardOrderYen: toNumber(payload.StandardOrderYen),
+	StandardOrderTax: toNumber(payload.StandardOrderTax),
+	ReducedOrderYen: toNumber(payload.ReducedOrderYen),
+	ReducedOrderTax: toNumber(payload.ReducedOrderTax),
+	
+	// 日付型フィールド (Shipping APIでstring format: dateとして定義されているフィールド)
+	ShopOrderDate: formatDate(payload.ShopOrderDate),
+	DeliveryScheDate: formatDate(payload.DeliveryScheDate),
+	ShipmentRequestDate: formatDate(payload.ShipmentRequestDate),
+	OrderReceiptDate: formatDate(payload.OrderReceiptDate),
+	DlvAppointedDate: formatDate(payload.DlvAppointedDate),
+	NextDlvDate: formatDate(payload.NextDlvDate),
+	PayDeadlineDate: formatDate(payload.PayDeadlineDate),
+	ReportScheduleDate: formatDate(payload.ReportScheduleDate),
+	PointLapseScheduleDate: formatDate(payload.PointLapseScheduleDate),
+	RankEndDate: formatDate(payload.RankEndDate),
+	
+	// 日時型フィールド (Shipping APIでstring format: date-timeとして定義されているフィールド)
+	DataCreateDate: formatDateTime(payload.DataCreateDate),
+	
+	// 文字列型フィールド (Shipping APIでstringとして定義されているフィールド)
+	DlvCorpCd: nullIfEmpty(payload.DlvCorpCd),
+	ShopCd: nullIfEmpty(payload.ShopCd),
+	ShipmentNo: validateRequiredString(payload.ShipmentNo, "ShipmentNo"),
+	ShipmentLineNo: validateRequiredString(payload.ShipmentLineNo, "ShipmentLineNo"),
+	ItemCd: validateRequiredString(payload.ItemCd, "ItemCd"),
+	SalesCommodityName: validateRequiredString(payload.SalesCommodityName, "SalesCommodityName"),
+	WrappingServiceName: nullIfEmpty(payload.WrappingServiceName),
+	SetItemCd: nullIfEmpty(payload.SetItemCd),
+	SetSalesCommodityName: nullIfEmpty(payload.SetSalesCommodityName),
+	ArrivalNo: nullIfEmpty(payload.ArrivalNo),
+	ArrivalLineNo: nullIfEmpty(payload.ArrivalLineNo),
+	Lot1: nullIfEmpty(payload.Lot1),
+	Lot2: nullIfEmpty(payload.Lot2),
+	CreateBy: validateRequiredString(payload.CreateBy, "CreateBy"),
+	CreditCardCorpCd: nullIfEmpty(payload.CreditCardCorpCd),
+	CustNo: validateRequiredString(payload.CustNo, "CustNo"),
+	ZipNo: nullIfEmpty(payload.ZipNo),
+	Adr1: nullIfEmpty(payload.Adr1),
+	Adr2: nullIfEmpty(payload.Adr2),
+	Adr3: nullIfEmpty(payload.Adr3),
+	Adr4: nullIfEmpty(payload.Adr4),
+	Adr5: nullIfEmpty(payload.Adr5),
+	Adr6: nullIfEmpty(payload.Adr6),
+	TelNo: nullIfEmpty(payload.TelNo),
+	CustKanjiName: nullIfEmpty(payload.CustKanjiName),
+	CustKanaName: nullIfEmpty(payload.CustKanaName),
+	ClientZipNo: nullIfEmpty(payload.ClientZipNo),
+	ClientAdr1: nullIfEmpty(payload.ClientAdr1),
+	ClientAdr2: nullIfEmpty(payload.ClientAdr2),
+	ClientAdr3: nullIfEmpty(payload.ClientAdr3),
+	ClientAdr4: nullIfEmpty(payload.ClientAdr4),
+	ClientAdr5: nullIfEmpty(payload.ClientAdr5),
+	ClientAdr6: nullIfEmpty(payload.ClientAdr6),
+	ClientTelNo: nullIfEmpty(payload.ClientTelNo),
+	ClientKanjiName: nullIfEmpty(payload.ClientKanjiName),
+	ClientKanaName: nullIfEmpty(payload.ClientKanaName),
+	ClientCorpName: nullIfEmpty(payload.ClientCorpName),
+	DestZipNo: nullIfEmpty(payload.DestZipNo),
+	DestAdr1: nullIfEmpty(payload.DestAdr1),
+	DestAdr2: nullIfEmpty(payload.DestAdr2),
+	DestAdr3: nullIfEmpty(payload.DestAdr3),
+	DestAdr4: nullIfEmpty(payload.DestAdr4),
+	DestAdr5: nullIfEmpty(payload.DestAdr5),
+	DestAdr6: nullIfEmpty(payload.DestAdr6),
+	DestTelNo: nullIfEmpty(payload.DestTelNo),
+	DestKanjiName: nullIfEmpty(payload.DestKanjiName),
+	DestKanaName: nullIfEmpty(payload.DestKanaName),
+	DestCorpName: nullIfEmpty(payload.DestCorpName),
+	DlvAppointedTimePerDlvCorpKbn: nullIfEmpty(payload.DlvAppointedTimePerDlvCorpKbn),
+	DlvAppointedTimePerDlvCorpName: nullIfEmpty(payload.DlvAppointedTimePerDlvCorpName),
+	DlvCorpDetailKbn: nullIfEmpty(payload.DlvCorpDetailKbn),
+	ArrivedShopNo1: nullIfEmpty(payload.ArrivedShopNo1),
+	ArrivedShopNo2: nullIfEmpty(payload.ArrivedShopNo2),
+	LiquidationShopNo1: nullIfEmpty(payload.LiquidationShopNo1),
+	LiquidationShopNo2: nullIfEmpty(payload.LiquidationShopNo2),
+	DlvInstructionComment: nullIfEmpty(payload.DlvInstructionComment),
+	SentenceKbn1: nullIfEmpty(payload.SentenceKbn1),
+	SentenceCd1: nullIfEmpty(payload.SentenceCd1),
+	SentenceKbn2: nullIfEmpty(payload.SentenceKbn2),
+	SentenceCd2: nullIfEmpty(payload.SentenceCd2),
+	CustServiceRankName: nullIfEmpty(payload.CustServiceRankName),
+	NextDlvItemCd1: nullIfEmpty(payload.NextDlvItemCd1),
+	NextDlvSalesCommodityName1: nullIfEmpty(payload.NextDlvSalesCommodityName1),
+	NextDlvCommoditySalesMethodName1: nullIfEmpty(payload.NextDlvCommoditySalesMethodName1),
+	NextDlvItemCd2: nullIfEmpty(payload.NextDlvItemCd2),
+	NextDlvSalesCommodityName2: nullIfEmpty(payload.NextDlvSalesCommodityName2),
+	NextDlvCommoditySalesMethodName2: nullIfEmpty(payload.NextDlvCommoditySalesMethodName2),
+	NextDlvItemCd3: nullIfEmpty(payload.NextDlvItemCd3),
+	NextDlvSalesCommodityName3: nullIfEmpty(payload.NextDlvSalesCommodityName3),
+	NextDlvCommoditySalesMethodName3: nullIfEmpty(payload.NextDlvCommoditySalesMethodName3),
+	NextDlvItemCd4: nullIfEmpty(payload.NextDlvItemCd4),
+	NextDlvSalesCommodityName4: nullIfEmpty(payload.NextDlvSalesCommodityName4),
+	NextDlvCommoditySalesMethodName4: nullIfEmpty(payload.NextDlvCommoditySalesMethodName4),
+	NextDlvItemCd5: nullIfEmpty(payload.NextDlvItemCd5),
+	NextDlvSalesCommodityName5: nullIfEmpty(payload.NextDlvSalesCommodityName5),
+	NextDlvCommoditySalesMethodName5: nullIfEmpty(payload.NextDlvCommoditySalesMethodName5),
+	NextDlvItemCd6: nullIfEmpty(payload.NextDlvItemCd6),
+	NextDlvSalesCommodityName6: nullIfEmpty(payload.NextDlvSalesCommodityName6),
+	NextDlvCommoditySalesMethodName6: nullIfEmpty(payload.NextDlvCommoditySalesMethodName6),
+	NextDlvItemCd7: nullIfEmpty(payload.NextDlvItemCd7),
+	NextDlvSalesCommodityName7: nullIfEmpty(payload.NextDlvSalesCommodityName7),
+	NextDlvCommoditySalesMethodName7: nullIfEmpty(payload.NextDlvCommoditySalesMethodName7),
+	NextDlvItemCd8: nullIfEmpty(payload.NextDlvItemCd8),
+	NextDlvSalesCommodityName8: nullIfEmpty(payload.NextDlvSalesCommodityName8),
+	NextDlvCommoditySalesMethodName8: nullIfEmpty(payload.NextDlvCommoditySalesMethodName8),
+	NextDlvItemCd9: nullIfEmpty(payload.NextDlvItemCd9),
+	NextDlvSalesCommodityName9: nullIfEmpty(payload.NextDlvSalesCommodityName9),
+	NextDlvCommoditySalesMethodName9: nullIfEmpty(payload.NextDlvCommoditySalesMethodName9),
+	NextDlvItemCd10: nullIfEmpty(payload.NextDlvItemCd10),
+	NextDlvSalesCommodityName10: nullIfEmpty(payload.NextDlvSalesCommodityName10),
+	NextDlvCommoditySalesMethodName10: nullIfEmpty(payload.NextDlvCommoditySalesMethodName10),
+	SentenceKbn3: nullIfEmpty(payload.SentenceKbn3),
+	SentenceCd3: nullIfEmpty(payload.SentenceCd3),
+	SentenceKbn4: nullIfEmpty(payload.SentenceKbn4),
+	SentenceCd4: nullIfEmpty(payload.SentenceCd4),
+	ExtKbnName: nullIfEmpty(payload.ExtKbnName),
+	InspectMemo: nullIfEmpty(payload.InspectMemo),
+	OCRCd: nullIfEmpty(payload.OCRCd),
+	EAN128Cd: nullIfEmpty(payload.EAN128Cd),
+	DestJISCd: nullIfEmpty(payload.DestJISCd),
+	PromoCd: nullIfEmpty(payload.PromoCd),
+	PromoName: nullIfEmpty(payload.PromoName),
+	YobiKbn: nullIfEmpty(payload.YobiKbn),
+	PointOccurComment: nullIfEmpty(payload.PointOccurComment)
 }]]></ee:set-payload>
-			</ee:message>
-		</ee:transform>
-		<logger level="INFO" doc:name="Log Processing Result" doc:id="log-result" 
-			message="Successfully processed file: #[payload.fileName] with #[sizeOf(payload.data)] records"/>
-		
-		<file:write doc:name="Write JSON Output" doc:id="write-json" 
-			config-ref="File_Config" 
-			path="/Users/ykurozumi/test_data/output/#[attributes.fileName replace '.csv' with '.json']">
-			<file:content>#[payload]</file:content>
-		</file:write>
-		
-		<logger level="INFO" doc:name="Log Completion" doc:id="log-complete" 
-			message="File processing completed: #[attributes.fileName]"/>
-	</flow>
+                </ee:message>
+            </ee:transform>
+            
+            <!-- Call Shipping API for each record -->
+            <logger doc:id="log-api-call" doc:name="Log API Call" level="INFO" message="Calling Shipping API for ShipmentNo: #[payload.ShipmentNo]"/>
+            <http:request method="POST" doc:name="Call Shipping API" doc:id="call-shipping-api" config-ref="HTTP_Request_configuration" path="/api/shipping-instructions">
+                <http:headers><![CDATA[#[{
+	"Content-Type" : "application/json"
+}]]]></http:headers>
+            </http:request>
+            <logger doc:id="log-api-success" doc:name="Log API Success" level="INFO" message="Successfully called Shipping API for ShipmentNo: #[payload.ShipmentNo]"/>
+        </foreach>
+        
+        <logger doc:id="log-complete" doc:name="Log Completion" level="INFO" message="File processing completed: #[vars.originalFileName]"/>
+    </flow>
 </mule>
