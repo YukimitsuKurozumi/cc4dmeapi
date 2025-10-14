@@ -1,7 +1,7 @@
 {
-    "name": "wms-sapi",
-    "minMuleVersion": "4.10.0",
-    "javaSpecificationVersions": [
-      "17"
-    ]
+  "name": "wms-sapi",
+  "minMuleVersion": "4.10.0",
+  "javaSpecificationVersions": [
+    "17"
+  ]
 }

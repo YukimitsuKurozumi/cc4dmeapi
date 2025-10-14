@@ -1,0 +1,73 @@
+{
+  "basicConstraints": 77,
+  "criticalExtensionOIDs": [
+    "a",
+    "aliquam",
+    "consectetur"
+  ],
+  "extendedKeyUsage": [
+    "felis",
+    "at"
+  ],
+  "extensions": [
+    {
+      "criticality": false,
+      "oid": "lectus"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Danilo",
+      "type": 53
+    }
+  ],
+  "issuerDN": {
+    "commonName": "eget",
+    "name": "Alonzo"
+  },
+  "issuerUniqueID": [
+    true,
+    true,
+    false
+  ],
+  "issuerX500Principal": {
+    "name": "Cornell"
+  },
+  "keyUsage": [
+    false,
+    false,
+    false
+  ],
+  "name": "Alease",
+  "nonCriticalExtensionOIDs": [
+    "Aliquam",
+    "Aliquam"
+  ],
+  "publicKey": {
+    "algorithm": "amet",
+    "modulus": 34,
+    "params": 99,
+    "publicKey": "consectetur"
+  },
+  "serialNumber": 77,
+  "serialNumberObject": {
+    "serialNumber": 30
+  },
+  "sigAlgName": "convallis",
+  "sigAlgOID": "venenatis",
+  "subjectAlternativeNames": [
+    {
+      "name": "Agueda",
+      "type": 99
+    }
+  ],
+  "subjectDN": {
+    "commonName": "sed",
+    "name": "Carmine"
+  },
+  "subjectX500Principal": {
+    "name": "Bud"
+  },
+  "type": "dictum",
+  "version": 84
+}

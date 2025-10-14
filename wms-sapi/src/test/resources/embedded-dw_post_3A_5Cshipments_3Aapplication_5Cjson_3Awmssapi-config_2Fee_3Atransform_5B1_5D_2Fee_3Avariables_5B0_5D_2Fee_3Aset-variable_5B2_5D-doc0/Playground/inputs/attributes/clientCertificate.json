@@ -1,0 +1,72 @@
+{
+  "basicConstraints": 59,
+  "criticalExtensionOIDs": [
+    "Nam",
+    "nisi"
+  ],
+  "extendedKeyUsage": [
+    "sodales",
+    "libero",
+    "sed"
+  ],
+  "extensions": [
+    {
+      "criticality": false,
+      "oid": "nisi"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Danny",
+      "type": 8
+    }
+  ],
+  "issuerDN": {
+    "commonName": "Pellentesque",
+    "name": "Alease"
+  },
+  "issuerUniqueID": [
+    false,
+    true
+  ],
+  "issuerX500Principal": {
+    "name": "Amina"
+  },
+  "keyUsage": [
+    false,
+    true
+  ],
+  "name": "Alisha",
+  "nonCriticalExtensionOIDs": [
+    "semper",
+    "consectetur",
+    "erat"
+  ],
+  "publicKey": {
+    "algorithm": "vitae",
+    "modulus": 97,
+    "params": 16,
+    "publicKey": "nunc"
+  },
+  "serialNumber": 0,
+  "serialNumberObject": {
+    "serialNumber": 4
+  },
+  "sigAlgName": "dolor",
+  "sigAlgOID": "sodales",
+  "subjectAlternativeNames": [
+    {
+      "name": "Alane",
+      "type": 8
+    }
+  ],
+  "subjectDN": {
+    "commonName": "semper",
+    "name": "Abraham"
+  },
+  "subjectX500Principal": {
+    "name": "Chi"
+  },
+  "type": "tincidunt",
+  "version": 69
+}

@@ -1,73 +1,74 @@
 {
-  "basicConstraints": 67,
+  "basicConstraints": 45,
   "criticalExtensionOIDs": [
-    "erat",
-    "sodales",
-    "convallis"
+    "In",
+    "tempor"
   ],
   "extendedKeyUsage": [
-    "dolor",
-    "dolor"
+    "molestie",
+    "tempor",
+    "semper"
   ],
   "extensions": [
     {
-      "criticality": true,
-      "oid": "molestie"
+      "criticality": false,
+      "oid": "sodales"
     }
   ],
   "issuerAlternativeNames": [
     {
-      "name": "Alvina",
-      "type": 15
+      "name": "Alisha",
+      "type": 65
     }
   ],
   "issuerDN": {
-    "commonName": "at",
-    "name": "Buddy"
+    "commonName": "a",
+    "name": "Amalia"
   },
   "issuerUniqueID": [
-    false,
+    true,
     true,
     true
   ],
   "issuerX500Principal": {
-    "name": "Alison"
+    "name": "Albertha"
   },
   "keyUsage": [
-    true,
-    false
+    false,
+    false,
+    true
   ],
-  "name": "Adele",
+  "name": "Alpha",
   "nonCriticalExtensionOIDs": [
-    "dolor",
-    "lorem",
-    "viverra"
+    "pretium",
+    "ac",
+    "a"
   ],
   "publicKey": {
-    "algorithm": "convallis",
-    "modulus": 6,
-    "params": 64,
-    "publicKey": "risus"
+    "algorithm": "arcu",
+    "modulus": 47,
+    "params": 48,
+    "publicKey": "molestie"
   },
-  "serialNumber": 1,
+  "serialNumber": 80,
   "serialNumberObject": {
-    "serialNumber": 4
+    "serialNumber": 90
   },
-  "sigAlgName": "eget",
-  "sigAlgOID": "Fusce",
+  "sigAlgName": "sodales",
+  "sigAlgOID": "eget",
   "subjectAlternativeNames": [
     {
-      "name": "Allan",
-      "type": 18
+      "name": "Adina",
+      "type": 51
     }
   ],
   "subjectDN": {
-    "commonName": "dolor",
-    "name": "Cruz"
+    "commonName": "Aliquam",
+    "name": "Adelaide"
   },
   "subjectX500Principal": {
-    "name": "Cletus"
+    "name": "An"
   },
-  "type": "amet",
-  "version": 35
+  "type": "dui",
+  "version": 75
 }

@@ -1,0 +1,74 @@
+{
+  "basicConstraints": 1,
+  "criticalExtensionOIDs": [
+    "ipsum",
+    "dolor",
+    "tincidunt"
+  ],
+  "extendedKeyUsage": [
+    "amet",
+    "molestie",
+    "Lorem"
+  ],
+  "extensions": [
+    {
+      "criticality": false,
+      "oid": "tempor"
+    }
+  ],
+  "issuerAlternativeNames": [
+    {
+      "name": "Adaline",
+      "type": 25
+    }
+  ],
+  "issuerDN": {
+    "commonName": "dictum",
+    "name": "Ali"
+  },
+  "issuerUniqueID": [
+    false,
+    true,
+    false
+  ],
+  "issuerX500Principal": {
+    "name": "Alden"
+  },
+  "keyUsage": [
+    true,
+    true,
+    false
+  ],
+  "name": "Clement",
+  "nonCriticalExtensionOIDs": [
+    "dolor",
+    "eget"
+  ],
+  "publicKey": {
+    "algorithm": "nisi",
+    "modulus": 75,
+    "params": 68,
+    "publicKey": "sodales"
+  },
+  "serialNumber": 66,
+  "serialNumberObject": {
+    "serialNumber": 64
+  },
+  "sigAlgName": "aliquam",
+  "sigAlgOID": "nibh",
+  "subjectAlternativeNames": [
+    {
+      "name": "Clint",
+      "type": 71
+    }
+  ],
+  "subjectDN": {
+    "commonName": "eros",
+    "name": "Anabel"
+  },
+  "subjectX500Principal": {
+    "name": "Anamaria"
+  },
+  "type": "In",
+  "version": 74
+}
