@@ -6,7 +6,7 @@
     <!-- <apikit:config name="wmssapi-config" api="resource::5733abe5-08b6-4bb3-a0ae-fd462d88c02a:wmssapi:1.1.0:oas:zip:wmssapi.yaml" outboundHeadersMapName="outboundHeaders" httpStatusVarName="httpStatus" /> -->
     <!-- SFTP設定 -->
     <sftp:config doc:name="SFTP Config" name="SFTP_Config">
-        <sftp:connection host="sftp.shared.demos.mulesoft.com" password="SFTP*Muledemo1234" port="22" username="sftpuser" workingDir="/upload/inbound/test001/"></sftp:connection>
+        <sftp:connection host="cloud-services.demos.mulesoft.com" password="MuleDemo2024-2024" port="30475" username="kurozumi" workingDir="/upload/toZIZAIA" responseTimeout="10"></sftp:connection>
     </sftp:config>
     <flow name="wmssapi-main">
         <http:listener config-ref="wmssapi-httpListenerConfig" path="/api/*">
@@ -295,12 +295,10 @@ payload.data.dnp_no default ""]]></ee:set-variable>
 output application/java
 ---
 now() as String {format: "yyyy-MM-dd'T'HH:mm:ss'Z'"}]]></ee:set-variable>
-                <ee:set-variable variableName="csvFileName">
-                <![CDATA[%dw 2.0
+                <ee:set-variable variableName="csvFileName"><![CDATA[%dw 2.0
 output application/java
 ---
-(now() as String {format: "yyyyMMdd_HHmmss"}) ++ "_" ++ (payload.data.dnp_no default "") ++ ".csv"]]>
-            </ee:set-variable>
+(now() as String {format: "yyyyMMdd_HHmmss"}) ++ "_" ++ (payload.data.dnp_no default "") ++ ".csv"]]></ee:set-variable>
             </ee:variables>
         </ee:transform>
         <flow-ref doc:name="Call Mapping Subflow" name="mapping-detailed-specification-subflow"></flow-ref>
